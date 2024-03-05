@@ -1,6 +1,18 @@
 #include <glad/glad.h> // Must include this before GLFW/glfw3.h. The GLFW depends on stuff from glad.
 #include <GLFW/glfw3.h>
 #include <iostream>
+#include <vector>
+#include "../include/objects/Vertex.h"
+#include "../include/objects/QuadFace.h"
+
+/* Assignment
+		Given a set of faces for a cube, render the appropriate faces.
+		Create the set of vertices.
+*/
+
+std::vector<int> getVisibleFaceIndices(QuadFace(&faces)[6]);
+bool isVisible(QuadFace& face);
+std::vector<float> createVectorFromVertexPair(const Vertex& v1, const Vertex& v2);
 
 void framebuffer_size_callback(GLFWwindow * window, int width, int height) {
 	glViewport(0, 0, width, height);
@@ -24,12 +36,25 @@ const char* fragmentShaderOrangeSource = "#version 330 core\n"
 	"{\n"
 	"  FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
 	"}\n\0";
-const char* fragmentShaderYellowSource = "#version 330 core\n"
-	"out vec4 FragColor;\n"
-	"void main()\n"
-	"{\n"
-	"  FragColor = vec4(1.0f, 1.0f, 0.0f, 1.0f);\n"
-	"}\n\0";
+
+Vertex vertices[8] = {
+	Vertex(-0.5f, -0.5f, 2.5),
+	Vertex(-0.5f, 0.5f, 2.5),
+	Vertex(0.5f, 0.5f, 2.5),
+	Vertex(0.5f, -0.5f, 2.5),
+	Vertex(-0.5f, -0.5f, 3.5),
+	Vertex(-0.5f, 0.5f, 3.5),
+	Vertex(0.5f, 0.5f, 3.5),
+	Vertex(0.5f, -0.5f, 3.5)
+};
+QuadFace faces[6] = {
+	QuadFace({ vertices[0], vertices[1], vertices[2], vertices[3] }),
+	QuadFace({ vertices[7], vertices[6], vertices[5], vertices[1] }),
+	QuadFace({ vertices[4], vertices[5], vertices[1], vertices[0] }),
+	QuadFace({ vertices[3], vertices[2], vertices[6], vertices[0] }),
+	QuadFace({ vertices[1], vertices[5], vertices[6], vertices[2] }),
+	QuadFace({ vertices[3], vertices[7], vertices[4], vertices[0] }),
+};
 
 int main() {
 	glfwInit();
@@ -86,30 +111,8 @@ int main() {
 		std::cout << "ERROR::SHADER::PROGRAM::ORANGE::COMPILATION_FAILED\n" << infoLog << std::endl;
 	}
 
-	unsigned int fragmentShaderYellow;
-	fragmentShaderYellow = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(fragmentShaderYellow, 1, &fragmentShaderYellowSource, NULL);
-	glCompileShader(fragmentShaderYellow);
-	glGetShaderiv(fragmentShaderYellow, GL_COMPILE_STATUS, &success);
-	if (!success) {
-		glGetShaderInfoLog(fragmentShaderYellow, 512, NULL, infoLog);
-		std::cout << "ERROR::SHADER::PROGRAM::YELLOW::COMPILATION_FAILED\n" << infoLog << std::endl;
-	}
-
-	unsigned int shaderProgramYellow;
-	shaderProgramYellow = glCreateProgram();
-	glAttachShader(shaderProgramYellow, vertexShader);
-	glAttachShader(shaderProgramYellow, fragmentShaderYellow);
-	glLinkProgram(shaderProgramYellow);
-	glGetProgramiv(shaderProgramYellow, GL_LINK_STATUS, &success);
-	if (!success) {
-		glGetProgramInfoLog(shaderProgramYellow, 512, NULL, infoLog);
-		std::cout << "ERROR::SHADER::PROGRAM::YELLOW::COMPILATION_FAILED\n" << infoLog << std::endl;
-	}
-
 	glDeleteShader(vertexShader);
 	glDeleteShader(fragmentShaderOrange);
-	glDeleteShader(fragmentShaderYellow);
 
 	/****************************** End of Setup **********************************/
 
@@ -118,15 +121,10 @@ int main() {
 		0.0f, -0.5f, 0.0f,
 		-0.45, 0.5f, 0.0f
 	};
-	float secondTriangle[] = {
-		0.0f, -0.5f, 0.0f,
-		0.9f, -0.5f, 0.0f,
-		0.45f, 0.5f, 0.0f
-	};
 
-	unsigned int VBOs[2], VAOs[2];
-	glGenVertexArrays(2, VAOs);
-	glGenBuffers(2, VBOs);
+	unsigned int VBOs[1], VAOs[1];
+	glGenVertexArrays(1, VAOs);
+	glGenBuffers(1, VBOs);
 	// first triangle setup
 	// --------------------
 	glBindVertexArray(VAOs[0]);
@@ -135,17 +133,9 @@ int main() {
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
 	// no need to unbind, as we are about to bind a new VAO
-	// second triangle setup
-	// ---------------------
-	glBindVertexArray(VAOs[1]);
-	glBindBuffer(GL_ARRAY_BUFFER, VBOs[1]);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(secondTriangle), secondTriangle, GL_STATIC_DRAW);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
-	glEnableVertexAttribArray(0);
-	glBindVertexArray(0); // not necessary, but good practice?
 
 	// turn on wireframe mode
-	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
 	// render loop
 	while (!glfwWindowShouldClose(window)) {
@@ -160,20 +150,41 @@ int main() {
 		glBindVertexArray(VAOs[0]);
 		glDrawArrays(GL_TRIANGLES, 0, 3);
 		
-		glUseProgram(shaderProgramYellow);
-		glBindVertexArray(VAOs[1]);
-		glDrawArrays(GL_TRIANGLES, 0, 3);
-
 		// check and call events and swap the buffers
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 	}
 	
-	glDeleteVertexArrays(2, VAOs);
+	glDeleteVertexArrays(1, VAOs);
 	glDeleteBuffers(1, VBOs);
 	glDeleteProgram(shaderProgramOrange);
-	glDeleteProgram(shaderProgramYellow);
 
 	glfwTerminate();
 	return 0;
+}
+
+std::vector<int> getVisibleFaceIndices(QuadFace(&faces)[6]) {
+	std::vector<int> visibleFaceIndices;
+
+	for (int i = 0; i < 6; i++) {
+		if (isVisible(faces[i])) {
+			visibleFaceIndices.push_back(i);
+		}
+	}
+
+	return visibleFaceIndices;
+}
+
+bool isVisible(QuadFace& face) {
+	// 1. Get the cross product of the face
+	const Vertex* faceVertices = face.getVertices();
+	std::vector<float> v1 = createVectorFromVertexPair(faceVertices[1], faceVertices[0]);
+	std::vector<float> v2 = createVectorFromVertexPair(faceVertices[2], faceVertices[1]);
+	std::vector<float> crossProduct = calculateCrossProduct(v1, v2); //continue here...
+	// 2. Get the dot product of the cross product above and the eye-to-point vector	
+	// 3. Return true if result is negative
+}
+
+std::vector<float> createVectorFromVertexPair(const Vertex& v1, const Vertex& v2) {
+	return { v2.getX() - v1.getX(), v2.getY() - v1.getY(), v2.getZ() - v1.getZ() };
 }
