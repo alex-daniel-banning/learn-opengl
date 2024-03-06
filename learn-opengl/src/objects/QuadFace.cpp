@@ -1,3 +1,4 @@
+#pragma once
 #include "../objects/QuadFace.h"
 
 QuadFace::QuadFace(const Vertex(&vertices)[NUMBER_OF_VERTICES]) {
