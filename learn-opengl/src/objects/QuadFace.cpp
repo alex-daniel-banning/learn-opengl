@@ -1,5 +1,5 @@
 #pragma once
-#include "../objects/QuadFace.h"
+#include <objects/QuadFace.h>
 
 QuadFace::QuadFace(const Vertex(&vertices)[NUMBER_OF_VERTICES]) {
 	for (int i = 0; i < NUMBER_OF_VERTICES; i++) {

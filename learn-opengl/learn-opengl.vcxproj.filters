@@ -35,7 +35,7 @@
     <ClInclude Include="include\objects\Vertex.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\objects\Cube.h">
+    <ClInclude Include="include\objects\Cube.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
