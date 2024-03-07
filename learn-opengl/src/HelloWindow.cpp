@@ -129,6 +129,9 @@ int main() {
 		-0.45, 0.5f, 0.0f
 	};
 
+	float cube[] = {-0.5f, -0.5f ,0.0f, -0.5f, 0.5f, 0.0f, 0.5f, 0.5f, 0.0f,
+					0.5f, 0.5f, 0.0f, 0.5f, -0.5f, 0.0f, -0.5f, -0.5f, 0.0f};
+
 	unsigned int VBOs[1], VAOs[1];
 	glGenVertexArrays(1, VAOs);
 	glGenBuffers(1, VBOs);
@@ -136,7 +139,8 @@ int main() {
 	// --------------------
 	glBindVertexArray(VAOs[0]);
 	glBindBuffer(GL_ARRAY_BUFFER, VBOs[0]);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(firstTriangle), firstTriangle, GL_STATIC_DRAW);
+	//glBufferData(GL_ARRAY_BUFFER, sizeof(firstTriangle), firstTriangle, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(cube), cube, GL_STATIC_DRAW);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
 	// no need to unbind, as we are about to bind a new VAO
@@ -155,7 +159,7 @@ int main() {
 
 		glUseProgram(shaderProgramOrange);
 		glBindVertexArray(VAOs[0]);
-		glDrawArrays(GL_TRIANGLES, 0, 3);
+		glDrawArrays(GL_TRIANGLES, 0, 6);
 		
 		// check and call events and swap the buffers
 		glfwSwapBuffers(window);
