@@ -89,14 +89,12 @@ int main() {
 	glDeleteShader(fragmentShaderOrange);
 
 	/****************************** End of Setup **********************************/
-  float vantagePoint[3] = { 0.0f, 0.0f, 0.0f };
-  float* cube = Cube::generateBufferData(vantagePoint);
+	float vantagePoint[3] = { 0.0f, 0.0f, 0.0f };
+	float* cube = Cube::generateBufferData(vantagePoint);
 
 	unsigned int VBOs[1], VAOs[1];
 	glGenVertexArrays(1, VAOs);
 	glGenBuffers(1, VBOs);
-	// first triangle setup
-	// --------------------
 	glBindVertexArray(VAOs[0]);
 	glBindBuffer(GL_ARRAY_BUFFER, VBOs[0]);
 	//glBufferData(GL_ARRAY_BUFFER, sizeof(firstTriangle), firstTriangle, GL_STATIC_DRAW);
@@ -129,7 +127,7 @@ int main() {
 	glDeleteVertexArrays(1, VAOs);
 	glDeleteBuffers(1, VBOs);
 	glDeleteProgram(shaderProgramOrange);
-  delete[] cube;
+	delete[] cube;
 
 	glfwTerminate();
 	return 0;
