@@ -19,14 +19,11 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="include\objects\QuadFace.h" />
     <ClCompile Include="src\glad.c" />
     <ClCompile Include="src\HelloWindow.cpp" />
-    <ClCompile Include="src\objects\QuadFace.cpp" />
-    <ClCompile Include="src\objects\Vertex.cpp" />
+    <ClCompile Include="src\objects\Cube.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\objects\Vertex.h" />
     <ClInclude Include="include\objects\Cube.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
