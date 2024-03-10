@@ -35,7 +35,7 @@ int main() {
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-	GLFWwindow* window = glfwCreateWindow(800, 600, "LearnOpenGL", NULL, NULL);
+	GLFWwindow* window = glfwCreateWindow(600, 600, "LearnOpenGL", NULL, NULL);
 	if (window == NULL) {
 		std::cout << "Failed to create GLFW window" << std::endl;
 		glfwTerminate();
@@ -48,7 +48,7 @@ int main() {
 		return -1;
 	}
 
-	glViewport(0, 0, 800, 600);
+	glViewport(0, 0, 600, 600);
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 	/* GLFW setup ends */
 
@@ -89,8 +89,9 @@ int main() {
 	glDeleteShader(fragmentShaderOrange);
 
 	/****************************** End of Setup **********************************/
-	const std::vector<float> vantagePoint = { 0.0f, 0.0f, 0.0f };
+	const std::vector<float> vantagePoint = { 1.5f, 1.5f, 0.0f };
 	float* cube = Cube::generateBufferData(vantagePoint);
+	int numberOfVisibleFaces = Cube::getNumberOfVisibleFaces(vantagePoint);
 
 	unsigned int VBOs[1], VAOs[1];
 	glGenVertexArrays(1, VAOs);
@@ -117,7 +118,7 @@ int main() {
 
 		glUseProgram(shaderProgramOrange);
 		glBindVertexArray(VAOs[0]);
-		glDrawArrays(GL_TRIANGLES, 0, 6);
+		glDrawArrays(GL_TRIANGLES, 0, 6 * numberOfVisibleFaces);
 		
 		// check and call events and swap the buffers
 		glfwSwapBuffers(window);

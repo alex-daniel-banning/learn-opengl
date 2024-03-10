@@ -35,16 +35,16 @@ bool Cube::isFaceVisible(const std::vector<int> face,
   return dotProduct < 0;
 }
 
-std::vector<float> Cube::calculateCrossProduct(const std::vector<int> facePointer) {
+std::vector<float> Cube::calculateCrossProduct(const std::vector<int> face) {
   std::vector<float> v1 = {
-      vertices[3 * facePointer[1]] - vertices[3 * facePointer[0]],
-      vertices[(3 * facePointer[1]) + 1] - vertices[(3 * facePointer[0]) + 1],
-      vertices[(3 * facePointer[1]) + 2] - vertices[(3 * facePointer[0]) + 2],
+      vertices[3 * face[1]] - vertices[3 * face[0]],
+      vertices[(3 * face[1]) + 1] - vertices[(3 * face[0]) + 1],
+      vertices[(3 * face[1]) + 2] - vertices[(3 * face[0]) + 2],
   };
   std::vector<float> v2 = {
-      vertices[3 * facePointer[2]] - vertices[3 * facePointer[1]],
-      vertices[(3 * facePointer[2]) + 1] - vertices[(3 * facePointer[1]) + 1],
-      vertices[(3 * facePointer[2]) + 2] - vertices[(3 * facePointer[1]) + 2],
+      vertices[3 * face[2]] - vertices[3 * face[1]],
+      vertices[(3 * face[2]) + 1] - vertices[(3 * face[1]) + 1],
+      vertices[(3 * face[2]) + 2] - vertices[(3 * face[1]) + 2],
   };
 
   std::vector<float> result = {
