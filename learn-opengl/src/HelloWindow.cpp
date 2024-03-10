@@ -89,7 +89,7 @@ int main() {
 	glDeleteShader(fragmentShaderOrange);
 
 	/****************************** End of Setup **********************************/
-	float vantagePoint[3] = { 0.0f, 0.0f, 0.0f };
+	const std::vector<float> vantagePoint = { 0.0f, 0.0f, 0.0f };
 	float* cube = Cube::generateBufferData(vantagePoint);
 
 	unsigned int VBOs[1], VAOs[1];
