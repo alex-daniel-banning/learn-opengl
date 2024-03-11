@@ -22,9 +22,14 @@
     <ClCompile Include="src\glad.c" />
     <ClCompile Include="src\HelloWindow.cpp" />
     <ClCompile Include="src\objects\Cube.cpp" />
+    <ClCompile Include="src\objects\Face.cpp" />
+    <ClCompile Include="src\objects\Model.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\objects\Cube.h" />
+    <ClInclude Include="include\objects\Face.h" />
+    <ClInclude Include="include\objects\Model.h" />
+    <ClInclude Include="include\objects\Vertex.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>

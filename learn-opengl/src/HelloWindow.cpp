@@ -3,6 +3,9 @@
 #include <iostream>
 #include <vector>
 #include <objects/Cube.h>
+#include <objects/Vertex.h>
+#include <objects/Face.h>
+#include <objects/Model.h>
 
 void framebuffer_size_callback(GLFWwindow * window, int width, int height) {
 	glViewport(0, 0, width, height);
@@ -13,6 +16,8 @@ void processInput(GLFWwindow* window) {
 		glfwSetWindowShouldClose(window, true);
 	}
 }
+
+std::vector<Face> generateCubeFaces();
 
 const char* vertexShaderSource = "#version 330 core\n"
 	"layout (location = 0) in vec3 aPos;\n"
@@ -89,17 +94,20 @@ int main() {
 	glDeleteShader(fragmentShaderOrange);
 
 	/****************************** End of Setup **********************************/
-	const std::vector<float> vantagePoint = { 1.5f, 1.5f, 0.0f };
-	float* cube = Cube::generateBufferData(vantagePoint);
-	int numberOfVisibleFaces = Cube::getNumberOfVisibleFaces(vantagePoint);
+
+	/* New stuff here */
+	
+	// todo, get rid of Cube class and clean up remnants
+	Model cubeModel(generateCubeFaces());
+	std::vector<float> test = cubeModel.generateVertexBufferData(Vertex(1.5f, 1.5f, 0.0f), 1.0f);
+	/******************/
 
 	unsigned int VBOs[1], VAOs[1];
 	glGenVertexArrays(1, VAOs);
 	glGenBuffers(1, VBOs);
 	glBindVertexArray(VAOs[0]);
 	glBindBuffer(GL_ARRAY_BUFFER, VBOs[0]);
-	//glBufferData(GL_ARRAY_BUFFER, sizeof(firstTriangle), firstTriangle, GL_STATIC_DRAW);
-	glBufferData(GL_ARRAY_BUFFER, Cube::getNumberOfVisibleFaces(vantagePoint) * 18 * sizeof(float), cube, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, test.size() * sizeof(float), test.data(), GL_STATIC_DRAW);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
 	// no need to unbind, as we are about to bind a new VAO
@@ -118,7 +126,7 @@ int main() {
 
 		glUseProgram(shaderProgramOrange);
 		glBindVertexArray(VAOs[0]);
-		glDrawArrays(GL_TRIANGLES, 0, 6 * numberOfVisibleFaces);
+		glDrawArrays(GL_TRIANGLES, 0, test.size());
 		
 		// check and call events and swap the buffers
 		glfwSwapBuffers(window);
@@ -128,9 +136,41 @@ int main() {
 	glDeleteVertexArrays(1, VAOs);
 	glDeleteBuffers(1, VBOs);
 	glDeleteProgram(shaderProgramOrange);
-	delete[] cube;
 
 	glfwTerminate();
 	return 0;
+}
+
+std::vector<Face> generateCubeFaces() {
+	std::vector<Vertex> vertices = {
+		{ -0.5f, -0.5f,  2.5f },
+		{ -0.5f,  0.5f,  2.5f },
+		{  0.5f,  0.5f,  2.5f },
+		{  0.5f, -0.5f,  2.5f },
+		{ -0.5f, -0.5f,  3.5f },
+		{ -0.5f,  0.5f,  3.5f },
+		{  0.5f,  0.5f,  3.5f },
+		{  0.5f, -0.5f,  3.5f }
+	};
+	std::vector<int> vertexIndices = {
+		0, 1, 2,  2, 3, 0,
+		7, 6, 5,  5, 4, 7,
+		4, 5, 1,  1, 0, 4,
+		3, 2, 6,  6, 7, 3,
+		1, 5, 6,  6, 2, 1,
+		3, 7, 4,  4, 0, 3
+	};
+	std::vector<Face> faces;
+
+	// for each 6 vertices
+	for (int vertexIndex = 0; vertexIndex < vertexIndices.size(); vertexIndex += 6) {
+		std::vector<Vertex> faceVertices;
+		for (int i = 0; i < 6; i++) {
+			faceVertices.push_back(vertices[vertexIndices[vertexIndex + i]]);
+		}
+		Face face(faceVertices);
+		faces.push_back(face);
+	}
+	return faces;
 }
 
