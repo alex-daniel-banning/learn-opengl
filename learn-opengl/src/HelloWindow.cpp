@@ -2,9 +2,8 @@
 #include <GLFW/glfw3.h>
 #include <iostream>
 #include <vector>
-#include <objects/Cube.h>
 #include <objects/Vertex.h>
-#include <objects/Face.h>
+#include <objects/TriangleFace.h>
 #include <objects/Model.h>
 
 void framebuffer_size_callback(GLFWwindow * window, int width, int height) {
@@ -17,7 +16,9 @@ void processInput(GLFWwindow* window) {
 	}
 }
 
-std::vector<Face> generateCubeFaces();
+std::vector<TriangleFace> generateFaces(std::vector<Vertex> vertices, std::vector<int> vertexIndices);
+std::vector<TriangleFace> generateCubeFaces();
+std::vector<TriangleFace> generateTriangularPrismFaces();
 
 const char* vertexShaderSource = "#version 330 core\n"
 	"layout (location = 0) in vec3 aPos;\n"
@@ -99,7 +100,9 @@ int main() {
 	
 	// todo, get rid of Cube class and clean up remnants
 	Model cubeModel(generateCubeFaces());
-	std::vector<float> test = cubeModel.generateVertexBufferData(Vertex(1.5f, 1.5f, 0.0f), 1.0f);
+	std::vector<float> cubeBufferData = cubeModel.generateVertexBufferData(Vertex(1.5f, 1.5f, 0.0f), 1.0f);
+	Model trianglularPrismModel(generateTriangularPrismFaces());
+	std::vector<float> triangularPrismBufferData = trianglularPrismModel.generateVertexBufferData(Vertex(1.5f, 1.5f, 0.0f), 1.0f);
 	/******************/
 
 	unsigned int VBOs[1], VAOs[1];
@@ -107,7 +110,7 @@ int main() {
 	glGenBuffers(1, VBOs);
 	glBindVertexArray(VAOs[0]);
 	glBindBuffer(GL_ARRAY_BUFFER, VBOs[0]);
-	glBufferData(GL_ARRAY_BUFFER, test.size() * sizeof(float), test.data(), GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, triangularPrismBufferData.size() * sizeof(float), triangularPrismBufferData.data(), GL_STATIC_DRAW);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
 	// no need to unbind, as we are about to bind a new VAO
@@ -126,7 +129,7 @@ int main() {
 
 		glUseProgram(shaderProgramOrange);
 		glBindVertexArray(VAOs[0]);
-		glDrawArrays(GL_TRIANGLES, 0, test.size());
+		glDrawArrays(GL_TRIANGLES, 0, triangularPrismBufferData.size());
 		
 		// check and call events and swap the buffers
 		glfwSwapBuffers(window);
@@ -141,7 +144,21 @@ int main() {
 	return 0;
 }
 
-std::vector<Face> generateCubeFaces() {
+std::vector<TriangleFace> generateFaces(std::vector<Vertex> vertices, std::vector<int> vertexIndices) {
+	std::vector<TriangleFace> faces;
+
+	for (int vertexIndex = 0; vertexIndex < vertexIndices.size(); vertexIndex += 3) {
+		std::vector<Vertex> faceVertices;
+		for (int i = 0; i < 3; i++) {
+			faceVertices.push_back(vertices[vertexIndices[vertexIndex + i]]);
+		}
+		TriangleFace face(faceVertices);
+		faces.push_back(face);
+	}
+	return faces;
+}
+
+std::vector<TriangleFace> generateCubeFaces() {
 	std::vector<Vertex> vertices = {
 		{ -0.5f, -0.5f,  2.5f },
 		{ -0.5f,  0.5f,  2.5f },
@@ -160,17 +177,24 @@ std::vector<Face> generateCubeFaces() {
 		1, 5, 6,  6, 2, 1,
 		3, 7, 4,  4, 0, 3
 	};
-	std::vector<Face> faces;
-
-	// for each 6 vertices
-	for (int vertexIndex = 0; vertexIndex < vertexIndices.size(); vertexIndex += 6) {
-		std::vector<Vertex> faceVertices;
-		for (int i = 0; i < 6; i++) {
-			faceVertices.push_back(vertices[vertexIndices[vertexIndex + i]]);
-		}
-		Face face(faceVertices);
-		faces.push_back(face);
-	}
-	return faces;
+	return generateFaces(vertices, vertexIndices);
 }
 
+std::vector<TriangleFace> generateTriangularPrismFaces() {
+	std::vector<Vertex> vertices = {
+		{ -0.5f, -0.5f,  2.5f },
+		{  0.0f,  0.5f,  2.5f },
+		{  0.5f, -0.5f,  2.5f },
+		{ -0.5f, -0.5f,  3.5f },
+		{  0.0f,  0.5f,  3.5f },
+		{  0.5f, -0.5f,  3.5f }
+	};
+	std::vector<int> vertexIndices = {
+		0, 1, 2,
+		3, 5, 4,
+		2, 1, 4, 4, 5, 2,
+		3, 4, 1, 1, 0, 3,
+		0, 2, 5, 5, 3, 0
+	};
+	return generateFaces(vertices, vertexIndices);
+}

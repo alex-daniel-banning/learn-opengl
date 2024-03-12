@@ -3,12 +3,12 @@
 #include <vector>
 #include <objects/Vertex.h>
 
-class Face {
+class TriangleFace {
 private:
 	const std::vector<float> calculateNormal();
 	const float calculateDotProduct(const std::vector<float> v1, const std::vector<float> v2);
 public:
-	Face(std::vector<Vertex> vertices) : vertices(vertices) {};
+	TriangleFace(std::vector<Vertex> vertices);
 	std::vector<Vertex> vertices;
 	bool isVisible(Vertex vantagePoint);
 };

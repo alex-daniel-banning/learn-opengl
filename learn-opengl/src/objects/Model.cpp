@@ -7,7 +7,7 @@
 
 std::vector<float> Model::generateVertexBufferData(const Vertex vantagePoint, float distanceFromScreen) {
 	std::vector<float> bufferData;
-	for (Face face : faces) {
+	for (TriangleFace face : faces) {
 		if (face.isVisible(vantagePoint)) {
 			for (Vertex vertex : face.vertices) {
 				float pX = vertex.x;

@@ -1,15 +1,15 @@
 #pragma once
 
 #include <objects/Vertex.h>
-#include <objects/Face.h>
+#include <objects/TriangleFace.h>
 #include <vector>
 
 class Model {
 private:
-	std::vector<Face> faces;
+	std::vector<TriangleFace> faces;
 	
 public:
 
-	Model(std::vector<Face> faces) : faces(faces) {};
+	Model(std::vector<TriangleFace> faces) : faces(faces) {};
 	std::vector<float> generateVertexBufferData(const Vertex vantagePoint, float distanceFromScreen);
 };
