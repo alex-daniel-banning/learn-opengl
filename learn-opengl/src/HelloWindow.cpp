@@ -19,6 +19,7 @@ void processInput(GLFWwindow* window) {
 std::vector<TriangleFace> generateFaces(std::vector<Vertex> vertices, std::vector<int> vertexIndices);
 std::vector<TriangleFace> generateCubeFaces();
 std::vector<TriangleFace> generateTriangularPrismFaces();
+std::vector<TriangleFace> generateTetrahedronFaces();
 
 const char* vertexShaderSource = "#version 330 core\n"
 	"layout (location = 0) in vec3 aPos;\n"
@@ -99,10 +100,16 @@ int main() {
 	/* New stuff here */
 	
 	// todo, get rid of Cube class and clean up remnants
-	Model cubeModel(generateCubeFaces());
-	std::vector<float> cubeBufferData = cubeModel.generateVertexBufferData(Vertex(1.5f, 1.5f, 0.0f), 1.0f);
-	Model trianglularPrismModel(generateTriangularPrismFaces());
-	std::vector<float> triangularPrismBufferData = trianglularPrismModel.generateVertexBufferData(Vertex(1.5f, 1.5f, 0.0f), 1.0f);
+	//Model cubeModel(generateCubeFaces());
+	//std::vector<float> cubeBufferData = cubeModel.generateVertexBufferData(Vertex(1.5f, 1.5f, 0.0f), 1.0f);
+	//Model trianglularPrismModel(generateTriangularPrismFaces());
+	//std::vector<float> triangularPrismBufferData = trianglularPrismModel.generateVertexBufferData(Vertex(1.5f, 1.5f, 0.0f), 1.0f);
+	//Model tetrahedronModel(generateTetrahedronFaces());
+	//std::vector<float> tetrahedronBufferData = tetrahedronModel.generateVertexBufferData(Vertex(1.5f, 1.5f, 0.0f), 1.0f);
+
+	/* Tetrahedron is working, yout just have to view it from the right angle (vantage point 0, 0, 0)*/
+	Model model(generateTetrahedronFaces());
+	std::vector<float> modelBufferData = model.generateVertexBufferData(Vertex(0.0f, 0.0f, 0.0f), 1.0f);
 	/******************/
 
 	unsigned int VBOs[1], VAOs[1];
@@ -110,7 +117,7 @@ int main() {
 	glGenBuffers(1, VBOs);
 	glBindVertexArray(VAOs[0]);
 	glBindBuffer(GL_ARRAY_BUFFER, VBOs[0]);
-	glBufferData(GL_ARRAY_BUFFER, triangularPrismBufferData.size() * sizeof(float), triangularPrismBufferData.data(), GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, modelBufferData.size() * sizeof(float), modelBufferData.data(), GL_STATIC_DRAW);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
 	// no need to unbind, as we are about to bind a new VAO
@@ -129,7 +136,7 @@ int main() {
 
 		glUseProgram(shaderProgramOrange);
 		glBindVertexArray(VAOs[0]);
-		glDrawArrays(GL_TRIANGLES, 0, triangularPrismBufferData.size());
+		glDrawArrays(GL_TRIANGLES, 0, modelBufferData.size());
 		
 		// check and call events and swap the buffers
 		glfwSwapBuffers(window);
@@ -195,6 +202,22 @@ std::vector<TriangleFace> generateTriangularPrismFaces() {
 		2, 1, 4, 4, 5, 2,
 		3, 4, 1, 1, 0, 3,
 		0, 2, 5, 5, 3, 0
+	};
+	return generateFaces(vertices, vertexIndices);
+}
+
+std::vector<TriangleFace> generateTetrahedronFaces() {
+	std::vector<Vertex> vertices = {
+		{  0.5f, -0.5f,  2.5f },
+		{ -0.5f,  0.5f,  2.5f },
+		{ -0.5f, -0.5f,  3.5f },
+		{  0.5f,  0.5f,  3.5f }
+	};
+	std::vector<int> vertexIndices = {
+		0, 3, 2,
+		0, 2, 1,
+		1, 2, 3,
+		0, 1, 3
 	};
 	return generateFaces(vertices, vertexIndices);
 }
