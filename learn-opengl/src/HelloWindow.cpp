@@ -2,13 +2,20 @@
 #include <GLFW/glfw3.h>
 #include <iostream>
 #include <vector>
+#include <stdexcept>
 #include <objects/Vertex.h>
 #include <objects/TriangleFace.h>
 #include <objects/Model.h>
+#include <objects/Button.h>
+#include <misc/Shaders.h>
+
 
 void framebuffer_size_callback(GLFWwindow * window, int width, int height) {
 	glViewport(0, 0, width, height);
 }
+
+void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
+bool buttonWasClicked(GLFWwindow* window, double xPos, double yPos);
 
 void processInput(GLFWwindow* window) {
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
@@ -16,51 +23,27 @@ void processInput(GLFWwindow* window) {
 	}
 }
 
+GLFWwindow* setupGLFW();
 std::vector<TriangleFace> generateFaces(std::vector<Vertex> vertices, std::vector<int> vertexIndices);
 std::vector<TriangleFace> generateCubeFaces();
 std::vector<TriangleFace> generateTriangularPrismFaces();
 std::vector<TriangleFace> generateTetrahedronFaces();
-
-const char* vertexShaderSource = "#version 330 core\n"
-	"layout (location = 0) in vec3 aPos;\n"
-	"void main()\n"
-	"{\n"
-	"  gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
-	"}\0";
-const char* fragmentShaderOrangeSource = "#version 330 core\n"
-	"out vec4 FragColor;\n"
-	"void main()\n"
-	"{\n"
-	"  FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
-	"}\n\0";
+Button createButton();
 
 int main() {
 
-	/* GLFW setup begins */
-	glfwInit();
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
-	GLFWwindow* window = glfwCreateWindow(600, 600, "LearnOpenGL", NULL, NULL);
-	if (window == NULL) {
-		std::cout << "Failed to create GLFW window" << std::endl;
-		glfwTerminate();
+	GLFWwindow* window;
+	try {
+		window = setupGLFW();
+	}
+	catch (const std::exception& e) {
+		std::cerr << "There was an error upon GLFW setup." << std::endl;
 		return -1;
 	}
-	glfwMakeContextCurrent(window);
-
-	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
-		std::cout << "Failed to initialize GLAD" << std::endl;
-		return -1;
-	}
-
-	glViewport(0, 0, 600, 600);
-	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-	/* GLFW setup ends */
 
 	unsigned int vertexShader;
 	vertexShader = glCreateShader(GL_VERTEX_SHADER);
+	const char* vertexShaderSource = Shaders::getVertexShaderSource();
 	glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
 	glCompileShader(vertexShader);
 	int success;
@@ -73,7 +56,8 @@ int main() {
 
 	unsigned int fragmentShaderOrange;
 	fragmentShaderOrange = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(fragmentShaderOrange, 1, &fragmentShaderOrangeSource, NULL);
+	const char* fragmentShaderSource = Shaders::getFragmentShaderOrangeSource();
+	glShaderSource(fragmentShaderOrange, 1, &fragmentShaderSource, NULL);
 	glCompileShader(fragmentShaderOrange);
 	glGetShaderiv(fragmentShaderOrange, GL_COMPILE_STATUS, &success);
 	if (!success) {
@@ -99,17 +83,17 @@ int main() {
 
 	/* New stuff here */
 	
-	// todo, get rid of Cube class and clean up remnants
-	//Model cubeModel(generateCubeFaces());
-	//std::vector<float> cubeBufferData = cubeModel.generateVertexBufferData(Vertex(1.5f, 1.5f, 0.0f), 1.0f);
-	//Model trianglularPrismModel(generateTriangularPrismFaces());
-	//std::vector<float> triangularPrismBufferData = trianglularPrismModel.generateVertexBufferData(Vertex(1.5f, 1.5f, 0.0f), 1.0f);
-	//Model tetrahedronModel(generateTetrahedronFaces());
-	//std::vector<float> tetrahedronBufferData = tetrahedronModel.generateVertexBufferData(Vertex(1.5f, 1.5f, 0.0f), 1.0f);
-
 	/* Tetrahedron is working, yout just have to view it from the right angle (vantage point 0, 0, 0)*/
 	Model model(generateTetrahedronFaces());
 	std::vector<float> modelBufferData = model.generateVertexBufferData(Vertex(0.0f, 0.0f, 0.0f), 1.0f);
+	Button button = createButton();
+	std::vector<float> buttonBufferData = button.generateVertexBufferData();
+
+	std::vector<float> bufferData;
+	bufferData.reserve(modelBufferData.size() + buttonBufferData.size());
+	bufferData.insert(bufferData.end(), modelBufferData.begin(), modelBufferData.end());
+	bufferData.insert(bufferData.end(), buttonBufferData.begin(), buttonBufferData.end());
+
 	/******************/
 
 	unsigned int VBOs[1], VAOs[1];
@@ -117,7 +101,7 @@ int main() {
 	glGenBuffers(1, VBOs);
 	glBindVertexArray(VAOs[0]);
 	glBindBuffer(GL_ARRAY_BUFFER, VBOs[0]);
-	glBufferData(GL_ARRAY_BUFFER, modelBufferData.size() * sizeof(float), modelBufferData.data(), GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, bufferData.size() * sizeof(float), bufferData.data(), GL_STATIC_DRAW);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
 	// no need to unbind, as we are about to bind a new VAO
@@ -136,7 +120,7 @@ int main() {
 
 		glUseProgram(shaderProgramOrange);
 		glBindVertexArray(VAOs[0]);
-		glDrawArrays(GL_TRIANGLES, 0, modelBufferData.size());
+		glDrawArrays(GL_TRIANGLES, 0, bufferData.size());
 		
 		// check and call events and swap the buffers
 		glfwSwapBuffers(window);
@@ -149,6 +133,56 @@ int main() {
 
 	glfwTerminate();
 	return 0;
+}
+
+GLFWwindow* setupGLFW() {
+	glfwInit();
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
+	GLFWwindow* window = glfwCreateWindow(600, 600, "LearnOpenGL", NULL, NULL);
+	if (window == NULL) {
+		std::cout << "Failed to create GLFW window" << std::endl;
+		glfwTerminate();
+		throw std::exception();
+	}
+	glfwMakeContextCurrent(window);
+
+	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
+		std::cout << "Failed to initialize GLAD" << std::endl;
+		throw std::exception();
+	}
+
+	glViewport(0, 0, 600, 600);
+	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+	glfwSetMouseButtonCallback(window, mouse_button_callback);
+
+	return window;
+}
+
+void mouse_button_callback(GLFWwindow* window, int button, int action, int mods) {
+	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
+		double xpos, ypos;
+		glfwGetCursorPos(window, &xpos, &ypos);
+		std::cout << "mouse has been clicked at position -> " << xpos << ":" << ypos << std::endl;
+		if (buttonWasClicked(window, xpos, ypos)) {
+			std::cout << "button clicked" << std::endl;
+		}
+	}
+}
+
+bool buttonWasClicked(GLFWwindow* window, double xPos, double yPos) {
+	int width, height;
+	glfwGetFramebufferSize(window, &width, &height);
+	// if x is in between button max and min x
+	double buttonMinX, buttonMaxX, buttonMinY, buttonMaxY;
+	buttonMinX = (-0.9f * (width) / 2.0f) + ((width) / 2.0f);
+	buttonMaxX = (-0.8f * (width) / 2.0f) + ((width) / 2.0f);
+	buttonMinY = (-0.9f * (height) / 2.0f) + ((height) / 2.0f);
+	buttonMaxY = (-0.8f * (height) / 2.0f) + ((height) / 2.0f);
+
+	return xPos > buttonMinX && xPos < buttonMaxX && yPos > buttonMinY && yPos < buttonMaxY;
 }
 
 std::vector<TriangleFace> generateFaces(std::vector<Vertex> vertices, std::vector<int> vertexIndices) {
@@ -220,4 +254,18 @@ std::vector<TriangleFace> generateTetrahedronFaces() {
 		0, 1, 3
 	};
 	return generateFaces(vertices, vertexIndices);
+}
+
+Button createButton() {
+	std::vector<Vertex> vertices = {
+		{ -0.9f, 0.9f, 1.0f },
+		{ -0.8f,  0.9f, 1.0f },
+		{ -0.8f,  0.8f,  1.0f },
+		{ -0.9f, 0.8f,  1.0f }
+	};
+	std::vector<int> vertexIndices = {
+		0, 1, 2,
+		2, 3, 0
+	};
+	return Button(vertices, vertexIndices);
 }
