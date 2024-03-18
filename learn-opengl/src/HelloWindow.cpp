@@ -24,6 +24,7 @@ void processInput(GLFWwindow* window) {
 }
 
 GLFWwindow* setupGLFW();
+unsigned int setupOrangeShaderProgram();
 std::vector<TriangleFace> generateFaces(std::vector<Vertex> vertices, std::vector<int> vertexIndices);
 std::vector<TriangleFace> generateCubeFaces();
 std::vector<TriangleFace> generateTriangularPrismFaces();
@@ -40,49 +41,8 @@ int main() {
 		std::cerr << "There was an error upon GLFW setup." << std::endl;
 		return -1;
 	}
+	unsigned int shaderProgramOrange = setupOrangeShaderProgram();
 
-	unsigned int vertexShader;
-	vertexShader = glCreateShader(GL_VERTEX_SHADER);
-	const char* vertexShaderSource = Shaders::getVertexShaderSource();
-	glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
-	glCompileShader(vertexShader);
-	int success;
-	char infoLog[512];
-	glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
-	if (!success) {
-		glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
-		std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
-	}
-
-	unsigned int fragmentShaderOrange;
-	fragmentShaderOrange = glCreateShader(GL_FRAGMENT_SHADER);
-	const char* fragmentShaderSource = Shaders::getFragmentShaderOrangeSource();
-	glShaderSource(fragmentShaderOrange, 1, &fragmentShaderSource, NULL);
-	glCompileShader(fragmentShaderOrange);
-	glGetShaderiv(fragmentShaderOrange, GL_COMPILE_STATUS, &success);
-	if (!success) {
-		glGetShaderInfoLog(fragmentShaderOrange, 512, NULL, infoLog);
-		std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLog << std::endl;
-	}
-
-	unsigned int shaderProgramOrange;
-	shaderProgramOrange = glCreateProgram();
-	glAttachShader(shaderProgramOrange, vertexShader);
-	glAttachShader(shaderProgramOrange, fragmentShaderOrange);
-	glLinkProgram(shaderProgramOrange);
-	glGetProgramiv(shaderProgramOrange, GL_LINK_STATUS, &success);
-	if (!success) {
-		glGetProgramInfoLog(shaderProgramOrange, 512, NULL, infoLog);
-		std::cout << "ERROR::SHADER::PROGRAM::ORANGE::COMPILATION_FAILED\n" << infoLog << std::endl;
-	}
-
-	glDeleteShader(vertexShader);
-	glDeleteShader(fragmentShaderOrange);
-
-	/****************************** End of Setup **********************************/
-
-	/* New stuff here */
-	
 	/* Tetrahedron is working, yout just have to view it from the right angle (vantage point 0, 0, 0)*/
 	Model model(generateTetrahedronFaces());
 	std::vector<float> modelBufferData = model.generateVertexBufferData(Vertex(0.0f, 0.0f, 0.0f), 1.0f);
@@ -93,8 +53,6 @@ int main() {
 	bufferData.reserve(modelBufferData.size() + buttonBufferData.size());
 	bufferData.insert(bufferData.end(), modelBufferData.begin(), modelBufferData.end());
 	bufferData.insert(bufferData.end(), buttonBufferData.begin(), buttonBufferData.end());
-
-	/******************/
 
 	unsigned int VBOs[1], VAOs[1];
 	glGenVertexArrays(1, VAOs);
@@ -109,9 +67,7 @@ int main() {
 	// turn on wireframe mode
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
-	// render loop
 	while (!glfwWindowShouldClose(window)) {
-		// input
 		processInput(window);
 
 		// rendering commands here
@@ -159,6 +115,48 @@ GLFWwindow* setupGLFW() {
 	glfwSetMouseButtonCallback(window, mouse_button_callback);
 
 	return window;
+}
+
+unsigned int setupOrangeShaderProgram() {
+	unsigned int vertexShader;
+	vertexShader = glCreateShader(GL_VERTEX_SHADER);
+	const char* vertexShaderSource = Shaders::getVertexShaderSource();
+	glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
+	glCompileShader(vertexShader);
+	int success;
+	char infoLog[512];
+	glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
+	if (!success) {
+		glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
+		std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
+	}
+
+	unsigned int fragmentShaderOrange;
+	fragmentShaderOrange = glCreateShader(GL_FRAGMENT_SHADER);
+	const char* fragmentShaderSource = Shaders::getFragmentShaderOrangeSource();
+	glShaderSource(fragmentShaderOrange, 1, &fragmentShaderSource, NULL);
+	glCompileShader(fragmentShaderOrange);
+	glGetShaderiv(fragmentShaderOrange, GL_COMPILE_STATUS, &success);
+	if (!success) {
+		glGetShaderInfoLog(fragmentShaderOrange, 512, NULL, infoLog);
+		std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLog << std::endl;
+	}
+
+	unsigned int shaderProgramOrange;
+	shaderProgramOrange = glCreateProgram();
+	glAttachShader(shaderProgramOrange, vertexShader);
+	glAttachShader(shaderProgramOrange, fragmentShaderOrange);
+	glLinkProgram(shaderProgramOrange);
+	glGetProgramiv(shaderProgramOrange, GL_LINK_STATUS, &success);
+	if (!success) {
+		glGetProgramInfoLog(shaderProgramOrange, 512, NULL, infoLog);
+		std::cout << "ERROR::SHADER::PROGRAM::ORANGE::COMPILATION_FAILED\n" << infoLog << std::endl;
+	}
+
+	glDeleteShader(vertexShader);
+	glDeleteShader(fragmentShaderOrange);
+
+	return shaderProgramOrange;
 }
 
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods) {
