@@ -14,6 +14,7 @@
 #define GLFW_EXPOSE_NATIVE_WGL
 #define GLFW_NATIVE_INCLUDE_NONE
 #include <GLFW/glfw3native.h>
+#include <misc/ModelRenderScene.h>
 
 void framebuffer_size_callback(GLFWwindow * window, int width, int height) {
 	glViewport(0, 0, width, height);
@@ -48,19 +49,7 @@ int main() {
 	}
 	unsigned int shaderProgramOrange = setupOrangeShaderProgram();
 
-	/***/
-	/***/
-
-	/* Tetrahedron is working, yout just have to view it from the right angle (vantage point 0, 0, 0)*/
-	Model model(generateTetrahedronFaces());
-	std::vector<float> modelBufferData = model.generateVertexBufferData(Vertex(0.0f, 0.0f, 0.0f), 1.0f);
-	Button button = createButton();
-	std::vector<float> buttonBufferData = button.generateVertexBufferData();
-
-	std::vector<float> bufferData;
-	bufferData.reserve(modelBufferData.size() + buttonBufferData.size());
-	bufferData.insert(bufferData.end(), modelBufferData.begin(), modelBufferData.end());
-	bufferData.insert(bufferData.end(), buttonBufferData.begin(), buttonBufferData.end());
+	const std::vector<float> bufferData = ModelRenderScene::getInstance().generateVertexBufferData();
 
 	unsigned int VBOs[1], VAOs[1];
 	glGenVertexArrays(1, VAOs);
@@ -70,7 +59,7 @@ int main() {
 	glBufferData(GL_ARRAY_BUFFER, bufferData.size() * sizeof(float), bufferData.data(), GL_STATIC_DRAW);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
-	// no need to unbind, as we are about to bind a new VAO
+	//// no need to unbind, as we are about to bind a new VAO
 
 	// turn on wireframe mode
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -170,55 +159,7 @@ unsigned int setupOrangeShaderProgram() {
 }
 
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods) {
-	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
-		double xpos, ypos;
-		glfwGetCursorPos(window, &xpos, &ypos);
-		std::cout << "mouse has been clicked at position -> " << xpos << ":" << ypos << std::endl;
-		if (buttonWasClicked(window, xpos, ypos)) {
-			//std::cout << "button clicked" << std::endl;
-
-			HRESULT hr = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
-			if (SUCCEEDED(hr)) {
-				IFileOpenDialog* pFileOpen;
-				 // Create the FileOpenDialog object.
-				hr = CoCreateInstance(CLSID_FileOpenDialog, NULL, CLSCTX_ALL, IID_IFileOpenDialog, reinterpret_cast<void**>(&pFileOpen));
-				if (SUCCEEDED(hr)) {
-					// Show the Open dialog box.
-					hr = pFileOpen->Show(NULL);
-					if (SUCCEEDED(hr)) {
-						IShellItem* pItem;
-						hr = pFileOpen->GetResult(&pItem);
-						if (SUCCEEDED(hr)) {
-							PWSTR pszFilePath;
-							hr = pItem->GetDisplayName(SIGDN_FILESYSPATH, &pszFilePath);
-							// Display the file name to the user.
-							if (SUCCEEDED(hr)) {
-								MessageBoxW(NULL, pszFilePath, L"File Path", MB_OK);
-								CoTaskMemFree(pszFilePath);
-							}
-							pItem->Release();
-						}
-					}
-				}
-
-				pFileOpen->Release();
-			}
-			CoUninitialize();
-		}
-	}
-}
-
-bool buttonWasClicked(GLFWwindow* window, double xPos, double yPos) {
-	int width, height;
-	glfwGetFramebufferSize(window, &width, &height);
-	// if x is in between button max and min x
-	double buttonMinX, buttonMaxX, buttonMinY, buttonMaxY;
-	buttonMinX = (-0.9f * (width) / 2.0f) + ((width) / 2.0f);
-	buttonMaxX = (-0.8f * (width) / 2.0f) + ((width) / 2.0f);
-	buttonMinY = (-0.9f * (height) / 2.0f) + ((height) / 2.0f);
-	buttonMaxY = (-0.8f * (height) / 2.0f) + ((height) / 2.0f);
-
-	return xPos > buttonMinX && xPos < buttonMaxX && yPos > buttonMinY && yPos < buttonMaxY;
+	ModelRenderScene::getInstance().handleMouseInput(window, button, action, mods);
 }
 
 std::vector<TriangleFace> generateFaces(std::vector<Vertex> vertices, std::vector<int> vertexIndices) {

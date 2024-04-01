@@ -21,13 +21,19 @@
   <ItemGroup>
     <ClCompile Include="src\glad.c" />
     <ClCompile Include="src\HelloWindow.cpp" />
+    <ClCompile Include="src\misc\ModelFileInputReader.cpp" />
+    <ClCompile Include="src\misc\ModelRenderScene.cpp" />
     <ClCompile Include="src\misc\Shaders.cpp" />
+    <ClCompile Include="src\misc\StringConverter.cpp" />
     <ClCompile Include="src\objects\Button.cpp" />
     <ClCompile Include="src\objects\TriangleFace.cpp" />
     <ClCompile Include="src\objects\Model.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\misc\ModelFileInputReader.h" />
+    <ClInclude Include="include\misc\ModelRenderScene.h" />
     <ClInclude Include="include\misc\Shaders.h" />
+    <ClInclude Include="include\misc\StringConverter.h" />
     <ClInclude Include="include\objects\Button.h" />
     <ClInclude Include="include\objects\TriangleFace.h" />
     <ClInclude Include="include\objects\Model.h" />

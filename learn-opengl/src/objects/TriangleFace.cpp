@@ -2,6 +2,35 @@
 #include <objects/Vertex.h>
 #include <cassert>
 
+TriangleFace::TriangleFace(const TriangleFace& other) {
+	for (Vertex vertex : other.vertices) {
+		vertices.push_back(Vertex(vertex));
+	}
+}
+
+TriangleFace::TriangleFace(TriangleFace&& other) noexcept {
+	vertices = std::move(other.vertices);
+	other.vertices.clear();
+}
+
+TriangleFace& TriangleFace::operator=(const TriangleFace& other) {
+	if (this != &other) {
+		vertices.clear();
+		for (const Vertex vertex : other.vertices) {
+			vertices.push_back(Vertex(vertex));
+		}
+	}
+	return *this;
+}
+
+TriangleFace& TriangleFace::operator=(TriangleFace&& other) noexcept {
+	if (this != &other) {
+		vertices = std::move(other.vertices);
+		other.vertices.clear();
+	}
+	return *this;
+}
+
 TriangleFace::TriangleFace(std::vector<Vertex> vertices)
 	: vertices(vertices) {
 	assert(vertices.size() == 3);

@@ -5,11 +5,18 @@
 #include <vector>
 
 class Model {
-private:
-	std::vector<TriangleFace> faces;
 	
 public:
+	Model() = default;
+	~Model() = default;
+	Model(const Model& other);
+	Model(Model&& other) noexcept;
+	Model(const std::vector<TriangleFace> faces);
+	Model& operator=(const Model& other);
+	Model& operator=(Model&& other) noexcept;
 
-	Model(std::vector<TriangleFace> faces) : faces(faces) {};
 	std::vector<float> generateVertexBufferData(const Vertex vantagePoint, float distanceFromScreen);
+
+private:
+	std::vector<TriangleFace> m_faces;
 };
