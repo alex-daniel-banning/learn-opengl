@@ -21,7 +21,6 @@ void framebuffer_size_callback(GLFWwindow * window, int width, int height) {
 }
 
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
-bool buttonWasClicked(GLFWwindow* window, double xPos, double yPos);
 
 void processInput(GLFWwindow* window) {
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {

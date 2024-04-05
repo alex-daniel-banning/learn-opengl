@@ -9,7 +9,7 @@
 Model ModelFileInputReader::readModelFromFile(PWSTR filepath_pwstr) {
 	
 	/* Convert to string */
-	std::string filepath = StringConverter::convertPWSTRToString(filepath_pwstr);
+	std::string filepath = StringConverter::convertToString(filepath_pwstr);
 
 	/* Handle first section */
 	std::ifstream filestream;
@@ -76,10 +76,9 @@ Model ModelFileInputReader::readModelFromFile(PWSTR filepath_pwstr) {
 		// Create triangle face
 		assert(faceTokens.size() == 3);
 		// Create the 3 vertices
-		std::vector<Vertex> triangleFaceVertices(3);
+		std::vector<Vertex> triangleFaceVertices;
 		for (int vertexIndex : faceTokens) {
-			assert(false); // reminder for todo below
-			Vertex v = Vertex(vertices[vertexIndex]); // todo copy constructor
+			Vertex v = Vertex(vertices[vertexIndex]);
 			triangleFaceVertices.push_back(v);
 		}	
 		TriangleFace triangleFace = TriangleFace(triangleFaceVertices);

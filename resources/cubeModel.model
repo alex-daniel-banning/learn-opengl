@@ -8,7 +8,7 @@ vertices 8
  0.5f,  0.5f,  3.5f
  0.5f, -0.5f,  3.5f 
 
-vertexIndices 12
+faces 12
 0,1,2
 2,3,0
 7,6,5

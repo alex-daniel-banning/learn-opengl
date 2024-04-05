@@ -1,4 +1,5 @@
 #pragma once
+
 #include <string>
 #include <codecvt>
 #include <locale>
@@ -6,5 +7,5 @@
 
 class StringConverter {
 public:
-	static std::string convertPWSTRToString(PWSTR pwsz);
+	static std::string convertToString(PWSTR orig);
 };
