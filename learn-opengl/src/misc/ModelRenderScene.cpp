@@ -21,6 +21,7 @@ ModelRenderScene::ModelRenderScene() {
 	m_mainModel = emptyModel;
 	m_vantagePoint = {0.0f, 0.0f, 0.0f};
 	m_distanceFromScreen = 1.0f;
+	m_vertexBufferData = generateVertexBufferData();
 }
 
 std::vector<float> ModelRenderScene::generateVertexBufferData() {
@@ -85,4 +86,9 @@ bool ModelRenderScene::buttonWasClicked(GLFWwindow* window, double xPos, double 
 
 void ModelRenderScene::processFileImport(PWSTR filePath) {
 	m_mainModel = ModelFileInputReader::readModelFromFile(filePath);
+	m_vertexBufferData = generateVertexBufferData();
+}
+
+std::vector<float> ModelRenderScene::getVertexBufferData() {
+	return m_vertexBufferData;
 }

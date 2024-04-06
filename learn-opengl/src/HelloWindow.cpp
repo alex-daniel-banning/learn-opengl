@@ -48,16 +48,16 @@ int main() {
 	}
 	unsigned int shaderProgramOrange = setupOrangeShaderProgram();
 
-	const std::vector<float> bufferData = ModelRenderScene::getInstance().generateVertexBufferData();
+	const std::vector<float> bufferData = ModelRenderScene::getInstance().getVertexBufferData();
 
 	unsigned int VBOs[1], VAOs[1];
 	glGenVertexArrays(1, VAOs);
 	glGenBuffers(1, VBOs);
 	glBindVertexArray(VAOs[0]);
 	glBindBuffer(GL_ARRAY_BUFFER, VBOs[0]);
-	glBufferData(GL_ARRAY_BUFFER, bufferData.size() * sizeof(float), bufferData.data(), GL_STATIC_DRAW);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
+	glUseProgram(shaderProgramOrange);
 	//// no need to unbind, as we are about to bind a new VAO
 
 	// turn on wireframe mode
@@ -70,8 +70,11 @@ int main() {
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 
-		glUseProgram(shaderProgramOrange);
-		glBindVertexArray(VAOs[0]);
+		glBufferData(
+			GL_ARRAY_BUFFER,
+			ModelRenderScene::getInstance().getVertexBufferData().size() * sizeof(float),
+			ModelRenderScene::getInstance().getVertexBufferData().data(),
+			GL_STATIC_DRAW);
 		glDrawArrays(GL_TRIANGLES, 0, bufferData.size());
 		
 		// check and call events and swap the buffers
