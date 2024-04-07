@@ -56,7 +56,7 @@ void ModelRenderScene::handleMouseInput(GLFWwindow* window, int button, int acti
 							hr = pItem->GetDisplayName(SIGDN_FILESYSPATH, &pszFilePath);
 							// Display the file name to the user.
 							if (SUCCEEDED(hr)) {
-								MessageBoxW(NULL, pszFilePath, L"File Path", MB_OK);
+								//MessageBoxW(NULL, pszFilePath, L"File Path", MB_OK);
 								processFileImport(pszFilePath);
 								CoTaskMemFree(pszFilePath);
 							}

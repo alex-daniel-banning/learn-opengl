@@ -1,19 +1,14 @@
-#include <glad/glad.h> // Must include this before GLFW/glfw3.h. The GLFW depends on stuff from glad.
-#include <GLFW/glfw3.h>
-#include <iostream>
-#include <vector>
-#include <stdexcept>
-#include <objects/Vertex.h>
-#include <objects/TriangleFace.h>
-#include <objects/Model.h>
-#include <objects/Button.h>
-#include <misc/Shaders.h>
-#include <windows.h>
-#include <shobjidl.h>
 #define GLFW_EXPOSE_NATIVE_WIN32
 #define GLFW_EXPOSE_NATIVE_WGL
 #define GLFW_NATIVE_INCLUDE_NONE
+#include <glad/glad.h> // Must include this before GLFW/glfw3.h. The GLFW depends on stuff from glad.
+#include <GLFW/glfw3.h>
+#include <iostream>
+#include <stdexcept>
+#include <vector>
+#include <windows.h>
 #include <GLFW/glfw3native.h>
+#include <misc/Shaders.h>
 #include <misc/ModelRenderScene.h>
 
 void framebuffer_size_callback(GLFWwindow * window, int width, int height) {
@@ -30,11 +25,6 @@ void processInput(GLFWwindow* window) {
 
 GLFWwindow* setupGLFW();
 unsigned int setupOrangeShaderProgram();
-std::vector<TriangleFace> generateFaces(std::vector<Vertex> vertices, std::vector<int> vertexIndices);
-std::vector<TriangleFace> generateCubeFaces();
-std::vector<TriangleFace> generateTriangularPrismFaces();
-std::vector<TriangleFace> generateTetrahedronFaces();
-Button createButton();
 
 int main() {
 
@@ -47,8 +37,6 @@ int main() {
 		return -1;
 	}
 	unsigned int shaderProgramOrange = setupOrangeShaderProgram();
-
-	const std::vector<float> bufferData = ModelRenderScene::getInstance().getVertexBufferData();
 
 	unsigned int VBOs[1], VAOs[1];
 	glGenVertexArrays(1, VAOs);
@@ -75,7 +63,7 @@ int main() {
 			ModelRenderScene::getInstance().getVertexBufferData().size() * sizeof(float),
 			ModelRenderScene::getInstance().getVertexBufferData().data(),
 			GL_STATIC_DRAW);
-		glDrawArrays(GL_TRIANGLES, 0, bufferData.size());
+		glDrawArrays(GL_TRIANGLES, 0, ModelRenderScene::getInstance().getVertexBufferData().size());
 		
 		// check and call events and swap the buffers
 		glfwSwapBuffers(window);
@@ -164,87 +152,3 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 	ModelRenderScene::getInstance().handleMouseInput(window, button, action, mods);
 }
 
-std::vector<TriangleFace> generateFaces(std::vector<Vertex> vertices, std::vector<int> vertexIndices) {
-	std::vector<TriangleFace> faces;
-
-	for (int vertexIndex = 0; vertexIndex < vertexIndices.size(); vertexIndex += 3) {
-		std::vector<Vertex> faceVertices;
-		for (int i = 0; i < 3; i++) {
-			faceVertices.push_back(vertices[vertexIndices[vertexIndex + i]]);
-		}
-		TriangleFace face(faceVertices);
-		faces.push_back(face);
-	}
-	return faces;
-}
-
-std::vector<TriangleFace> generateCubeFaces() {
-	std::vector<Vertex> vertices = {
-		{ -0.5f, -0.5f,  2.5f },
-		{ -0.5f,  0.5f,  2.5f },
-		{  0.5f,  0.5f,  2.5f },
-		{  0.5f, -0.5f,  2.5f },
-		{ -0.5f, -0.5f,  3.5f },
-		{ -0.5f,  0.5f,  3.5f },
-		{  0.5f,  0.5f,  3.5f },
-		{  0.5f, -0.5f,  3.5f }
-	};
-	std::vector<int> vertexIndices = {
-		0, 1, 2,  2, 3, 0,
-		7, 6, 5,  5, 4, 7,
-		4, 5, 1,  1, 0, 4,
-		3, 2, 6,  6, 7, 3,
-		1, 5, 6,  6, 2, 1,
-		3, 7, 4,  4, 0, 3
-	};
-	return generateFaces(vertices, vertexIndices);
-}
-
-std::vector<TriangleFace> generateTriangularPrismFaces() {
-	std::vector<Vertex> vertices = {
-		{ -0.5f, -0.5f,  2.5f },
-		{  0.0f,  0.5f,  2.5f },
-		{  0.5f, -0.5f,  2.5f },
-		{ -0.5f, -0.5f,  3.5f },
-		{  0.0f,  0.5f,  3.5f },
-		{  0.5f, -0.5f,  3.5f }
-	};
-	std::vector<int> vertexIndices = {
-		0, 1, 2,
-		3, 5, 4,
-		2, 1, 4, 4, 5, 2,
-		3, 4, 1, 1, 0, 3,
-		0, 2, 5, 5, 3, 0
-	};
-	return generateFaces(vertices, vertexIndices);
-}
-
-std::vector<TriangleFace> generateTetrahedronFaces() {
-	std::vector<Vertex> vertices = {
-		{  0.5f, -0.5f,  2.5f },
-		{ -0.5f,  0.5f,  2.5f },
-		{ -0.5f, -0.5f,  3.5f },
-		{  0.5f,  0.5f,  3.5f }
-	};
-	std::vector<int> vertexIndices = {
-		0, 3, 2,
-		0, 2, 1,
-		1, 2, 3,
-		0, 1, 3
-	};
-	return generateFaces(vertices, vertexIndices);
-}
-
-Button createButton() {
-	std::vector<Vertex> vertices = {
-		{ -0.9f, 0.9f, 1.0f },
-		{ -0.8f,  0.9f, 1.0f },
-		{ -0.8f,  0.8f,  1.0f },
-		{ -0.9f, 0.8f,  1.0f }
-	};
-	std::vector<int> vertexIndices = {
-		0, 1, 2,
-		2, 3, 0
-	};
-	return Button(vertices, vertexIndices);
-}
