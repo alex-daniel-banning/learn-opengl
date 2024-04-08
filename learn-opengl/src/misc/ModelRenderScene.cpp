@@ -1,6 +1,8 @@
 #pragma once
 #include <misc/ModelRenderScene.h>
 #include <misc/ModelFileInputReader.h>
+#include <misc/StringConverter.h>
+#include <exceptions/ModelImportException.h>
 
 ModelRenderScene::ModelRenderScene() {
 	const std::vector<Vertex> buttonVertices = {
@@ -85,7 +87,15 @@ bool ModelRenderScene::buttonWasClicked(GLFWwindow* window, double xPos, double 
 }
 
 void ModelRenderScene::processFileImport(PWSTR filePath) {
-	m_mainModel = ModelFileInputReader::readModelFromFile(filePath);
+	try {
+		m_mainModel = ModelFileInputReader::readModelFromFile(filePath);
+	}
+	catch (const ModelImportException& e) {
+		MessageBoxW(NULL, StringConverter::convertToWideChar(e.what()).get(), L"An error occured.", MB_OK);
+	}
+	catch (const std::exception& e) {
+		MessageBoxW(NULL, StringConverter::convertToWideChar(e.what()).get(), L"An error occured.", MB_OK);
+	}
 	m_vertexBufferData = generateVertexBufferData();
 }
 

@@ -1,15 +1,19 @@
 #pragma once
+
+#include <exceptions/ModelImportException.h>
 #include <misc/ModelFileInputReader.h>
 #include <misc/StringConverter.h>
 #include <iostream>
+#include <filesystem>
 #include <fstream>
 #include <sstream>
-#include <cassert>
 
 Model ModelFileInputReader::readModelFromFile(PWSTR filepath_pwstr) {
 	
 	/* Convert to string */
 	std::string filepath = StringConverter::convertToString(filepath_pwstr);
+
+	validateFileType(filepath);
 
 	/* Handle first section */
 	std::ifstream filestream;
@@ -24,9 +28,7 @@ Model ModelFileInputReader::readModelFromFile(PWSTR filepath_pwstr) {
 		tokens.push_back(verticesHeaders);
 	}
 
-	// todo - more comprehensive validation
-	assert(tokens.size() == 2);
-	assert(tokens[0] == "vertices");
+	validateVerticesMetadata(tokens);
 	
 	int numUniqueVertices = std::stoi(tokens[1]);
 	std::vector<Vertex> vertices;
@@ -42,7 +44,9 @@ Model ModelFileInputReader::readModelFromFile(PWSTR filepath_pwstr) {
 		while (std::getline(vertexLineStream, coordStr, ',')) {
 			coordTokens.push_back(trim(coordStr));
 		}
-		assert(coordTokens.size() == 3);
+		if (coordTokens.size() != 3) {
+			throw ModelImportException("Malformed coordinate found when reading in vertex data.");
+		}
 		Vertex vertex = Vertex(std::stof(coordTokens[0]), std::stof(coordTokens[1]), std::stof(coordTokens[2]));
 		vertices.push_back(vertex);
 	}
@@ -50,7 +54,9 @@ Model ModelFileInputReader::readModelFromFile(PWSTR filepath_pwstr) {
 	/* Handle second section */
 	std::string emptyLine;
 	std::getline(filestream, emptyLine);
-	assert(emptyLine == "");
+	if (emptyLine != "") {
+		throw ModelImportException("There should be an empty line after vertex data and before face metadata.");
+	}
 
 	std::string faceHeader;
 	std::getline(filestream, faceHeader);
@@ -60,9 +66,10 @@ Model ModelFileInputReader::readModelFromFile(PWSTR filepath_pwstr) {
 	while (std::getline(faceHeadersStream, faceHeaderToken, ' ')) {
 		faceHeaderTokens.push_back(faceHeaderToken);
 	}
-	assert(faceHeaderTokens[0] == "faces");
-	int numberOfFaces = stoi(faceHeaderTokens[1]);
 
+	validateFacesMetadata(faceHeaderTokens);
+	
+	int numberOfFaces = stoi(faceHeaderTokens[1]);
 	std::vector<TriangleFace> triangleFaces;
 	for (int i = 0; i < numberOfFaces; i++) {
 		std::string faceline;
@@ -74,7 +81,7 @@ Model ModelFileInputReader::readModelFromFile(PWSTR filepath_pwstr) {
 			faceTokens.push_back(std::stoi(faceToken));
 		}
 		// Create triangle face
-		assert(faceTokens.size() == 3);
+		validateFace(faceTokens, vertices.size());
 		// Create the 3 vertices
 		std::vector<Vertex> triangleFaceVertices;
 		for (int vertexIndex : faceTokens) {
@@ -97,4 +104,31 @@ std::string ModelFileInputReader::trim(const std::string& str) {
 	}
 	size_t last = str.find_last_not_of(" \n\r\t");
 	return str.substr(first, (last - first + 1));
+}
+
+void ModelFileInputReader::validateFileType(const std::string& str) {
+	std::filesystem::path path(str);
+	if (path.extension().string() != ".model") {
+		throw ModelImportException("You have to select a .model file.");
+	}
+}
+
+void ModelFileInputReader::validateVerticesMetadata(std::vector<std::string> &tokens) {
+	if (tokens.size() != 2 || tokens[0] != "vertices") {
+		throw ModelImportException("There was an error when processing vertices metadata.");
+	}
+}
+
+void ModelFileInputReader::validateFacesMetadata(std::vector<std::string> &tokens) {
+	if (tokens.size() != 2 || tokens[0] != "faces") {
+		throw ModelImportException("There was an error when processing faces metadata.");
+	}
+}
+
+void ModelFileInputReader::validateFace( std::vector<int> faceTokens, int verticesCount) {
+	for (int vertexIndex : faceTokens) {
+		if (vertexIndex >= verticesCount) {
+			throw ModelImportException("Encountered a face with more than 3 vertices.");
+		}
+	}
 }

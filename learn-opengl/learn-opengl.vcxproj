@@ -30,6 +30,7 @@
     <ClCompile Include="src\objects\Model.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\exceptions\ModelImportException.h" />
     <ClInclude Include="include\misc\ModelFileInputReader.h" />
     <ClInclude Include="include\misc\ModelRenderScene.h" />
     <ClInclude Include="include\misc\Shaders.h" />
