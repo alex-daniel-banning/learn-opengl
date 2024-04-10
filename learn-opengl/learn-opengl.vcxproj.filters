@@ -71,5 +71,11 @@
     <ClInclude Include="include\exceptions\ModelImportException.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\misc\FontManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\misc\SolutionDirectory.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -102,3 +102,19 @@ void ModelRenderScene::processFileImport(PWSTR filePath) {
 std::vector<float> ModelRenderScene::getVertexBufferData() {
 	return m_vertexBufferData;
 }
+
+unsigned int ModelRenderScene::getVBO() {
+	return m_VBO;
+}
+
+void ModelRenderScene::setVBO(unsigned int vbo) {
+	m_VBO = vbo;
+}
+
+unsigned int ModelRenderScene::getVAO() {
+	return m_VAO;
+}
+
+void ModelRenderScene::setVAO(unsigned int vao) {
+	m_VAO = vao;
+}

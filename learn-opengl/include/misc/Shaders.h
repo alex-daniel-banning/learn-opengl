@@ -2,6 +2,8 @@
 
 class Shaders {
 public:
-	static const char* getVertexShaderSource();
-	static const char* getFragmentShaderOrangeSource();
+	static const char* getModelVertexShader();
+	static const char* getModelFragmentShader();
+	static const char* getTextVertexShader();
+	static const char* getTextFragmentShader();
 };

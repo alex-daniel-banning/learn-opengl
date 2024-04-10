@@ -22,12 +22,18 @@ public:
 	void handleMouseInput(GLFWwindow* window, int button, int action, int mods);
 	std::vector<float> getVertexBufferData();
 
+	unsigned int getVBO();
+	void setVBO(unsigned int vbo);
+	unsigned int getVAO();
+	void setVAO(unsigned int vao);
+
 private:
 	Button m_selectModelButton;
 	Model m_mainModel;
 	Vertex m_vantagePoint;
 	float m_distanceFromScreen;
 	std::vector<float> m_vertexBufferData;
+	unsigned int m_VBO, m_VAO;
 
 	ModelRenderScene();
 
