@@ -34,6 +34,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\exceptions\ModelImportException.h" />
+    <ClInclude Include="include\learnopengl\shader.h" />
     <ClInclude Include="include\misc\ModelFileInputReader.h" />
     <ClInclude Include="include\misc\ModelRenderScene.h" />
     <ClInclude Include="include\misc\Shaders.h" />
@@ -45,7 +46,6 @@
     <ClInclude Include="include\objects\Model.h" />
     <ClInclude Include="include\objects\Vertex.h" />
     <ClInclude Include="include\misc\FontManager.h" />
-    <ClInclude Include="include\render\Shader.h" />
     <ClInclude Include="include\misc\TextRenderScene.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

@@ -86,13 +86,13 @@
     <ClInclude Include="include\misc\SolutionDirectory.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\render\Shader.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\misc\TextRenderScene.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\objects\Character.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\learnopengl\shader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
