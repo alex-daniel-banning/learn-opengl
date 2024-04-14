@@ -6,6 +6,7 @@
 #include <string>
 #include <objects/Model.h>
 #include <objects/Button.h>
+#include <render/Shader.h>
 
 class ModelRenderScene {
 public:
@@ -21,11 +22,9 @@ public:
 
 	void handleMouseInput(GLFWwindow* window, int button, int action, int mods);
 	std::vector<float> getVertexBufferData();
-
-	unsigned int getVBO();
-	void setVBO(unsigned int vbo);
-	unsigned int getVAO();
 	void setVAO(unsigned int vao);
+	void setVBO(unsigned int vbo);
+	void render();
 
 private:
 	Button m_selectModelButton;
@@ -34,10 +33,14 @@ private:
 	float m_distanceFromScreen;
 	std::vector<float> m_vertexBufferData;
 	unsigned int m_VBO, m_VAO;
+	Shader m_shader;
 
 	ModelRenderScene();
 
 	bool buttonWasClicked(GLFWwindow* window, double xPos, double yPos);
 	void processFileImport(PWSTR filePath);
 	std::vector<float> generateVertexBufferData();
+	unsigned int getVBO();
+	unsigned int getVAO();
+	void useShader();
 };

@@ -1,8 +1,10 @@
 #pragma once
 #include <misc/ModelRenderScene.h>
 #include <misc/ModelFileInputReader.h>
+#include <misc/Shaders.h>
 #include <misc/StringConverter.h>
 #include <exceptions/ModelImportException.h>
+#include <render/Shader.h>
 
 ModelRenderScene::ModelRenderScene() {
 	const std::vector<Vertex> buttonVertices = {
@@ -24,6 +26,8 @@ ModelRenderScene::ModelRenderScene() {
 	m_vantagePoint = {0.0f, 0.0f, 0.0f};
 	m_distanceFromScreen = 1.0f;
 	m_vertexBufferData = generateVertexBufferData();
+
+	m_shader = Shader(Shaders::getModelVertexShader(), Shaders::getModelFragmentShader());
 }
 
 std::vector<float> ModelRenderScene::generateVertexBufferData() {
@@ -118,3 +122,23 @@ unsigned int ModelRenderScene::getVAO() {
 void ModelRenderScene::setVAO(unsigned int vao) {
 	m_VAO = vao;
 }
+
+void ModelRenderScene::useShader() {
+	m_shader.use();
+}
+
+void ModelRenderScene::render() {
+	ModelRenderScene::getInstance().useShader();
+	glBindBuffer(GL_ARRAY_BUFFER, ModelRenderScene::getInstance().getVBO());
+	glBindVertexArray(ModelRenderScene::getInstance().getVAO());
+	glBufferData(
+		GL_ARRAY_BUFFER,
+		ModelRenderScene::getInstance().getVertexBufferData().size() * sizeof(float),
+		ModelRenderScene::getInstance().getVertexBufferData().data(),
+		GL_STATIC_DRAW);
+	glDrawArrays(GL_TRIANGLES, 0, ModelRenderScene::getInstance().getVertexBufferData().size());
+
+	glBindVertexArray(0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+}
+

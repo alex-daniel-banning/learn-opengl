@@ -1,13 +1,13 @@
-#pragma once
+// SolutionDirectory.h
+
+#ifndef SOLUTION_DIRECTORY_H
+#define SOLUTION_DIRECTORY_H
+
 #include <string>
 
 class SolutionDirectory {
 public:
-	static const std::string directory;
+    static const std::string directory;
 };
 
-#ifdef _SOLUTIONDIR
-	const std::string SolutionDirectory::directory = _SOLUTIONDIR;
-#else
-	const std::string SolutionDirectory::directory = "";
 #endif

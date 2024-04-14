@@ -24,10 +24,13 @@
     <ClCompile Include="src\misc\ModelFileInputReader.cpp" />
     <ClCompile Include="src\misc\ModelRenderScene.cpp" />
     <ClCompile Include="src\misc\Shaders.cpp" />
+    <ClCompile Include="src\misc\SolutionDirectory.cpp" />
     <ClCompile Include="src\misc\StringConverter.cpp" />
+    <ClCompile Include="src\misc\TextRenderScene.cpp" />
     <ClCompile Include="src\objects\Button.cpp" />
     <ClCompile Include="src\objects\TriangleFace.cpp" />
     <ClCompile Include="src\objects\Model.cpp" />
+    <ClCompile Include="src\render\Shader.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\exceptions\ModelImportException.h" />
@@ -37,10 +40,13 @@
     <ClInclude Include="include\misc\SolutionDirectory.h" />
     <ClInclude Include="include\misc\StringConverter.h" />
     <ClInclude Include="include\objects\Button.h" />
+    <ClInclude Include="include\objects\Character.h" />
     <ClInclude Include="include\objects\TriangleFace.h" />
     <ClInclude Include="include\objects\Model.h" />
     <ClInclude Include="include\objects\Vertex.h" />
     <ClInclude Include="include\misc\FontManager.h" />
+    <ClInclude Include="include\render\Shader.h" />
+    <ClInclude Include="include\misc\TextRenderScene.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
