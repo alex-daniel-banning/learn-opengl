@@ -16,6 +16,7 @@
 #include <learnopengl/shader.h>
 
 #include <misc/FontManager.h>
+#include <misc/ModelRenderScene.h>
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow* window);
@@ -34,7 +35,8 @@ struct Character {
 };
 
 std::map<GLchar, Character> Characters;
-unsigned int VAO, VBO;
+unsigned int VAO[2];
+unsigned int VBO[2];
 
 int main()
 {
@@ -157,13 +159,27 @@ int main()
     FT_Done_Face(face);
     FT_Done_FreeType(ft);
 
+    
+    // configure VAO/VBO for model
+    /*
+    glBindVertexArray(VAO[0]);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO[0]);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+    //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    ModelRenderScene::getInstance().setVAO(VAO[0]);
+    ModelRenderScene::getInstance().setVBO(VBO[0]);
+    //glBindBuffer(GL_ARRAY_BUFFER, 0);
+    //glBindVertexArray(0);
+    // VERY INTERESTING, THIS IS CAUSING THE TEXT TO RENDER ALL WEIRD
+    */
 
     // configure VAO/VBO for texture quads
     // -----------------------------------
-    glGenVertexArrays(1, &VAO);
-    glGenBuffers(1, &VBO);
-    glBindVertexArray(VAO);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glGenVertexArrays(1, &VAO[1]);
+    glGenBuffers(1, &VBO[1]);
+    glBindVertexArray(VAO[1]);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO[1]);
     glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 6 * 4, NULL, GL_DYNAMIC_DRAW);
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), 0);
@@ -183,6 +199,7 @@ int main()
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
+        //ModelRenderScene::getInstance().render();
         RenderText(shader, "This is sample text", 25.0f, 25.0f, 1.0f, glm::vec3(0.5, 0.8f, 0.2f));
         RenderText(shader, "(C) LearnOpenGL.com", 540.0f, 570.0f, 0.5f, glm::vec3(0.3, 0.7f, 0.9f));
 
@@ -222,7 +239,7 @@ void RenderText(Shader2& shader, std::string text, float x, float y, float scale
     shader.use();
     glUniform3f(glGetUniformLocation(shader.ID, "textColor"), color.x, color.y, color.z);
     glActiveTexture(GL_TEXTURE0);
-    glBindVertexArray(VAO);
+    glBindVertexArray(VAO[1]);
 
     // iterate through all characters
     std::string::const_iterator c;
@@ -248,7 +265,7 @@ void RenderText(Shader2& shader, std::string text, float x, float y, float scale
         // render glyph texture over quad
         glBindTexture(GL_TEXTURE_2D, ch.TextureID);
         // update content of VBO memory
-        glBindBuffer(GL_ARRAY_BUFFER, VBO);
+        glBindBuffer(GL_ARRAY_BUFFER, VBO[1]);
         glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices); // be sure to use glBufferSubData and not glBufferData
 
         glBindBuffer(GL_ARRAY_BUFFER, 0);
