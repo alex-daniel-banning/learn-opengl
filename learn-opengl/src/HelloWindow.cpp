@@ -159,21 +159,6 @@ int main()
     FT_Done_Face(face);
     FT_Done_FreeType(ft);
 
-    
-    // configure VAO/VBO for model
-    glGenVertexArrays(1, &VAO[0]);
-    glGenBuffers(1, &VBO[0]);
-    glBindVertexArray(VAO[0]);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO[0]);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-    std::cout << glGetError() << std::endl; // this line is where the 1282 code is printed out
-    glEnableVertexAttribArray(0);
-    //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-    ModelRenderScene::getInstance().setVAO(VAO[0]);
-    ModelRenderScene::getInstance().setVBO(VBO[0]);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindVertexArray(0);
-    // VERY INTERESTING, THIS IS CAUSING THE TEXT TO RENDER ALL WEIRD
 
     // configure VAO/VBO for texture quads
     // -----------------------------------

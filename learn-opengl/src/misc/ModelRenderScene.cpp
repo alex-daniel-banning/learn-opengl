@@ -25,12 +25,24 @@ ModelRenderScene::ModelRenderScene() {
 	m_mainModel = emptyModel;
 	m_vantagePoint = {0.0f, 0.0f, 0.0f};
 	m_distanceFromScreen = 1.0f;
-	m_vertexBufferData = generateVertexBufferData();
+	m_modelVertexBufferData = generateModelVertexBufferData();
 
-	m_shader = Shader(Shaders::getModelVertexShader(), Shaders::getModelFragmentShader());
+	m_model_shader = Shader(Shaders::getModelVertexShader(), Shaders::getModelFragmentShader());
+	
+    // configure VAO/VBO for model
+    glGenVertexArrays(1, &m_model_VAO);
+    glGenBuffers(1, &m_model_VBO);
+    glBindVertexArray(m_model_VAO);
+    glBindBuffer(GL_ARRAY_BUFFER, m_model_VBO);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+    //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);
+    // VERY INTERESTING, THIS IS CAUSING THE TEXT TO RENDER ALL WEIRD
 }
 
-std::vector<float> ModelRenderScene::generateVertexBufferData() {
+std::vector<float> ModelRenderScene::generateModelVertexBufferData() {
 	std::vector<float> buttonBufferData = m_selectModelButton.generateVertexBufferData();
 	std::vector<float> modelBufferData = m_mainModel.generateVertexBufferData(m_vantagePoint, m_distanceFromScreen);
 	std::vector<float> combinedBufferData;
@@ -100,44 +112,36 @@ void ModelRenderScene::processFileImport(PWSTR filePath) {
 	catch (const std::exception& e) {
 		MessageBoxW(NULL, StringConverter::convertToWideChar(e.what()).get(), L"An error occured.", MB_OK);
 	}
-	m_vertexBufferData = generateVertexBufferData();
+	m_modelVertexBufferData = generateModelVertexBufferData();
 }
 
-std::vector<float> ModelRenderScene::getVertexBufferData() {
-	return m_vertexBufferData;
+std::vector<float> ModelRenderScene::getModelVertexBufferData() {
+	return m_modelVertexBufferData;
 }
 
-unsigned int ModelRenderScene::getVBO() {
-	return m_VBO;
+void ModelRenderScene::useModelShader() {
+	m_model_shader.use();
 }
 
-void ModelRenderScene::setVBO(unsigned int vbo) {
-	m_VBO = vbo;
+unsigned int ModelRenderScene::getModelVAO() {
+	return m_model_VAO;
 }
 
-unsigned int ModelRenderScene::getVAO() {
-	return m_VAO;
-}
-
-void ModelRenderScene::setVAO(unsigned int vao) {
-	m_VAO = vao;
-}
-
-void ModelRenderScene::useShader() {
-	m_shader.use();
+unsigned int ModelRenderScene::getModelVBO() {
+	return m_model_VBO;
 }
 
 void ModelRenderScene::render() {
-	ModelRenderScene::getInstance().useShader();
-	glBindBuffer(GL_ARRAY_BUFFER, ModelRenderScene::getInstance().getVBO());
-	glBindVertexArray(ModelRenderScene::getInstance().getVAO());
+	/* render model and button */
+	ModelRenderScene::getInstance().useModelShader();
+	glBindBuffer(GL_ARRAY_BUFFER, ModelRenderScene::getInstance().getModelVBO());
+	glBindVertexArray(ModelRenderScene::getInstance().getModelVAO());
 	glBufferData(
 		GL_ARRAY_BUFFER,
-		ModelRenderScene::getInstance().getVertexBufferData().size() * sizeof(float),
-		ModelRenderScene::getInstance().getVertexBufferData().data(),
+		ModelRenderScene::getInstance().getModelVertexBufferData().size() * sizeof(float),
+		ModelRenderScene::getInstance().getModelVertexBufferData().data(),
 		GL_STATIC_DRAW);
-	glDrawArrays(GL_TRIANGLES, 0, ModelRenderScene::getInstance().getVertexBufferData().size());
-
+	glDrawArrays(GL_TRIANGLES, 0, ModelRenderScene::getInstance().getModelVertexBufferData().size());
 	glBindVertexArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
