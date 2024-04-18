@@ -27,6 +27,7 @@
     <ClCompile Include="src\misc\SolutionDirectory.cpp" />
     <ClCompile Include="src\misc\StringConverter.cpp" />
     <ClCompile Include="src\objects\Button.cpp" />
+    <ClCompile Include="src\objects\Text.cpp" />
     <ClCompile Include="src\objects\TriangleFace.cpp" />
     <ClCompile Include="src\objects\Model.cpp" />
     <ClCompile Include="src\render\Shader.cpp" />
@@ -34,6 +35,7 @@
   <ItemGroup>
     <ClInclude Include="include\exceptions\ModelImportException.h" />
     <ClInclude Include="include\learnopengl\shader.h" />
+    <ClInclude Include="include\misc\Characters.h" />
     <ClInclude Include="include\misc\ModelFileInputReader.h" />
     <ClInclude Include="include\misc\ModelRenderScene.h" />
     <ClInclude Include="include\misc\Shaders.h" />
@@ -41,6 +43,7 @@
     <ClInclude Include="include\misc\StringConverter.h" />
     <ClInclude Include="include\objects\Button.h" />
     <ClInclude Include="include\objects\Character.h" />
+    <ClInclude Include="include\objects\Text.h" />
     <ClInclude Include="include\objects\TriangleFace.h" />
     <ClInclude Include="include\objects\Model.h" />
     <ClInclude Include="include\objects\Vertex.h" />
