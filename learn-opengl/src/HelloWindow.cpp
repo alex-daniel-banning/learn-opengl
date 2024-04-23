@@ -1,126 +1,99 @@
-#define GLFW_EXPOSE_NATIVE_WIN32
-#define GLFW_EXPOSE_NATIVE_WGL
-#define GLFW_NATIVE_INCLUDE_NONE
-#include <glad/glad.h> // Must include this before GLFW/glfw3.h. The GLFW depends on stuff from glad.
-#include <GLFW/glfw3.h>
-//#include <ft2build.h>
-//#include FT_FREETYPE_H
-//#include <glm/glm.hpp>
-//#include <glm/gtc/matrix_transform.hpp>
 #include <iostream>
-#include <stdexcept>
-#include <vector>
-#include <windows.h>
-#include <GLFW/glfw3native.h>
-#include <misc/Shaders.h>
+#include <map>
+#include <string>
+
+#include <glad/glad.h>
+#include <GLFW/glfw3.h>
+
+#include <ft2build.h>
+#include FT_FREETYPE_H
+
 #include <misc/ModelRenderScene.h>
-#include <misc/TextRenderScene.h>
-#include <misc/FontManager.h>
-#include <render/Shader.h>
+#include <objects/Text.h>
+#include <objects/Character.h>
 
-void framebuffer_size_callback(GLFWwindow * window, int width, int height) {
-	glViewport(0, 0, width, height);
+void framebuffer_size_callback(GLFWwindow* window, int width, int height);
+void processInput(GLFWwindow* window);
+
+// settings
+const unsigned int SCR_WIDTH = 800;
+const unsigned int SCR_HEIGHT = 600;
+
+int main()
+{
+    // glfw: initialize and configure
+    // ------------------------------
+    glfwInit();
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
+#ifdef __APPLE__
+    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+#endif
+
+    // glfw window creation
+    // --------------------
+    GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "LearnOpenGL", NULL, NULL);
+    if (window == NULL)
+    {
+        std::cout << "Failed to create GLFW window" << std::endl;
+        glfwTerminate();
+        return -1;
+    }
+    glfwMakeContextCurrent(window);
+    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+
+    // glad: load all OpenGL function pointers
+    // ---------------------------------------
+    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
+    {
+        std::cout << "Failed to initialize GLAD" << std::endl;
+        return -1;
+    }
+
+    Text peepeepoopoo;
+
+    // render loop
+    // -----------
+    while (!glfwWindowShouldClose(window))
+    {
+        // input
+        // -----
+        processInput(window);
+
+        // render
+        // ------
+        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT);
+
+        ModelRenderScene::getInstance().render();
+        peepeepoopoo.render();
+
+        // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
+        // -------------------------------------------------------------------------------
+        glfwSwapBuffers(window);
+        glfwPollEvents();
+    }
+
+    glfwTerminate();
+    return 0;
 }
 
-void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
-
-void processInput(GLFWwindow* window) {
-	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
-		glfwSetWindowShouldClose(window, true);
-	}
+// process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
+// ---------------------------------------------------------------------------------------------------------
+void processInput(GLFWwindow* window)
+{
+    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+        glfwSetWindowShouldClose(window, true);
 }
 
-GLFWwindow* setupGLFW();
-
-int main() {
-
-	GLFWwindow* window;
-	try {
-		window = setupGLFW();
-	}
-	catch (const std::exception& e) {
-		std::cerr << "There was an error upon GLFW setup." << std::endl;
-		return -1;
-	}
-
-	unsigned int VBOs[2], VAOs[2];
-	glGenVertexArrays(2, VAOs);
-	glGenBuffers(2, VBOs);
-
-	/*
-	glBindVertexArray(VAOs[0]);
-	glBindBuffer(GL_ARRAY_BUFFER, VBOs[0]);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-	glEnableVertexAttribArray(0);
-	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // wireframe mode
-	// this can probably be better organized/refactored
-	ModelRenderScene::getInstance().setVBO(VBOs[0]);
-	ModelRenderScene::getInstance().setVAO(VAOs[0]);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindVertexArray(0);
-	// no need to unbind, as we are about to bind a new VAO
-	*/
-
-	glBindVertexArray(VAOs[1]);
-	glBindBuffer(GL_ARRAY_BUFFER, VBOs[1]);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 6 * 4, NULL, GL_DYNAMIC_DRAW);
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), 0);
-	TextRenderScene::getInstance().setVBO(VBOs[1]);
-	TextRenderScene::getInstance().setVAO(VAOs[1]);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindVertexArray(0);
-
-	while (!glfwWindowShouldClose(window)) {
-		processInput(window);
-
-		// rendering commands here
-		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT);
-
-		//ModelRenderScene::getInstance().render();
-		TextRenderScene::getInstance().render("This is sample text", 25.0f, 25.0f, 1.0f, glm::vec3(0.5, 0.8f, 0.2f));
-		
-		// check and call events and swap the buffers
-		glfwSwapBuffers(window);
-		glfwPollEvents();
-	}
-	
-	glDeleteVertexArrays(1, VAOs);
-	glDeleteBuffers(1, VBOs);
-
-	glfwTerminate();
-	return 0;
+// glfw: whenever the window size changed (by OS or user resize) this callback function executes
+// ---------------------------------------------------------------------------------------------
+void framebuffer_size_callback(GLFWwindow* window, int width, int height)
+{
+    // make sure the viewport matches the new window dimensions; note that width and 
+    // height will be significantly larger than specified on retina displays.
+    glViewport(0, 0, width, height);
 }
 
-/*************************************************/
-
-GLFWwindow* setupGLFW() {
-	glfwInit();
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
-	GLFWwindow* window = glfwCreateWindow(600, 600, "LearnOpenGL", NULL, NULL);
-	if (window == NULL) {
-		std::cout << "Failed to create GLFW window" << std::endl;
-		glfwTerminate();
-		throw std::exception();
-	}
-	glfwMakeContextCurrent(window);
-
-	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
-		std::cout << "Failed to initialize GLAD" << std::endl;
-		throw std::exception();
-	}
-
-	glViewport(0, 0, 600, 600);
-	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-	glfwSetMouseButtonCallback(window, mouse_button_callback);
-
-	return window;
-}
-
-void mouse_button_callback(GLFWwindow* window, int button, int action, int mods) {
-	ModelRenderScene::getInstance().handleMouseInput(window, button, action, mods);
-}

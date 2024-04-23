@@ -7,7 +7,11 @@
 #include <iostream>
 
 Shader::Shader() {
-	ID = 69;
+	ID = 0;
+}
+
+Shader::Shader(const Shader& other) {
+	ID = other.ID;
 }
 
 Shader::Shader(const char* vertexShaderSource, const char* fragmentShaderSource) {

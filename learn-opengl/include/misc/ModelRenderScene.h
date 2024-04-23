@@ -21,9 +21,7 @@ public:
 	ModelRenderScene& operator=(ModelRenderScene&&) = delete;
 
 	void handleMouseInput(GLFWwindow* window, int button, int action, int mods);
-	std::vector<float> getVertexBufferData();
-	void setVAO(unsigned int vao);
-	void setVBO(unsigned int vbo);
+	std::vector<float> getModelVertexBufferData();
 	void render();
 
 private:
@@ -31,16 +29,16 @@ private:
 	Model m_mainModel;
 	Vertex m_vantagePoint;
 	float m_distanceFromScreen;
-	std::vector<float> m_vertexBufferData;
-	unsigned int m_VBO, m_VAO;
-	Shader m_shader;
+	std::vector<float> m_modelVertexBufferData, m_textVertexBufferData;
+	unsigned int m_model_VBO, m_model_VAO, m_text_VBO, m_text_VAO;
+	Shader m_model_shader;
 
 	ModelRenderScene();
 
 	bool buttonWasClicked(GLFWwindow* window, double xPos, double yPos);
 	void processFileImport(PWSTR filePath);
-	std::vector<float> generateVertexBufferData();
-	unsigned int getVBO();
-	unsigned int getVAO();
-	void useShader();
+	std::vector<float> generateModelVertexBufferData();
+	unsigned int getModelVBO();
+	unsigned int getModelVAO();
+	void useModelShader();
 };
