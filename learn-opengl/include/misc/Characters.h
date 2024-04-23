@@ -4,7 +4,8 @@
 #include <glad/glad.h>
 #include <objects/Character.h>
 #include <string>
-#include <learnopengl/shader.h>
+#include <misc/Shaders.h>
+#include <iostream>
 #include <misc/FontManager.h>
 
 #include <glm/glm.hpp>
@@ -26,10 +27,10 @@ private:
 	Characters() {
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		Shader2 shader;
+        Shader shader(Shaders::getTextVertexShader(), Shaders::getTextFragmentShader());
 		glm::mat4 projection = glm::ortho(0.0f, 800.0f, 0.0f, 600.0f);
 		shader.use();
-		glUniformMatrix4fv(glGetUniformLocation(shader.ID, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
+		glUniformMatrix4fv(glGetUniformLocation(shader.getID(), "projection"), 1, GL_FALSE, glm::value_ptr(projection));
 
 		// FreeType
 		// --------

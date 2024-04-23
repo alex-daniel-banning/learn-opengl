@@ -1,5 +1,5 @@
 #pragma once
-#include <learnopengl/shader.h>
+#include <render/Shader.h>
 #include <string>
 #include <objects/Character.h>
 #include <map>
@@ -14,7 +14,7 @@ public:
 	Text& operator=(Text&& other) noexcept;
 	void render();
 private:
-	Shader2 m_shader;
+	Shader m_shader;
 	std::string m_text;
 	float m_x, m_y, m_scale;
 	glm::vec3 m_color;

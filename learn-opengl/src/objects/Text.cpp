@@ -13,12 +13,17 @@ Text::Text() : m_VAO(0), m_VBO(0) {
 	//m_color = glm::vec3(0.5, 0.8f, 0.2f);
 	//m_VAO = 0;
 	//m_VBO = 0;
-	m_shader = Shader2();
+	m_shader = Shader(Shaders::getTextVertexShader(), Shaders::getTextFragmentShader());
+	// ----
+    glm::mat4 projection = glm::ortho(0.0f, 800.0f, 0.0f, 600.0f);
+    m_shader.use();
+    glUniformMatrix4fv(glGetUniformLocation(m_shader.getID(), "projection"), 1, GL_FALSE, glm::value_ptr(projection));
+	// ----
 	m_text = "pee pee poo poo";
 	m_x = 25.0f;
 	m_y = 25.0f;
-	m_scale = 1.0f;
-	m_color = glm::vec3(0.5, 0.8f, 0.2f);
+	m_scale = 0.5f;
+	m_color = glm::vec3(0.3, 0.7f, 0.9f);
 	glGenVertexArrays(1, &m_VAO);
 	glGenBuffers(1, &m_VBO);
 	glBindVertexArray(m_VAO);
@@ -32,7 +37,7 @@ Text::Text() : m_VAO(0), m_VBO(0) {
 
 Text::Text(const Text& other) {
 	// copy members
-	m_shader = Shader2(other.m_shader); // not 100% sure this makes sense because it would duplicate the instance of an ID
+	m_shader = Shader(other.m_shader); // not 100% sure this makes sense because it would duplicate the instance of an ID
 	m_text = other.m_text;
 	m_x = other.m_x;
 	m_y = other.m_y;
@@ -54,7 +59,7 @@ Text::Text(Text&& other) noexcept {
 }
 
 Text& Text::operator=(const Text& other) {
-	m_shader = Shader2(other.m_shader);
+	m_shader = Shader(other.m_shader);
 	m_text = other.m_text;
 	m_x = other.m_x;
 	m_y = other.m_y;
@@ -79,7 +84,7 @@ Text& Text::operator=(Text&& other) noexcept {
 
 void Text::render() {
 	m_shader.use();
-	glUniform3f(glGetUniformLocation(m_shader.ID, "textColor"), m_color.x, m_color.y, m_color.z);
+	glUniform3f(glGetUniformLocation(m_shader.getID(), "textColor"), m_color.x, m_color.y, m_color.z);
 	glActiveTexture(GL_TEXTURE0);
 	glBindVertexArray(m_VAO);
 
