@@ -39,7 +39,6 @@ ModelRenderScene::ModelRenderScene() {
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
-    // VERY INTERESTING, THIS IS CAUSING THE TEXT TO RENDER ALL WEIRD
 }
 
 std::vector<float> ModelRenderScene::generateModelVertexBufferData() {

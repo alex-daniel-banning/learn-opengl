@@ -1,8 +1,12 @@
 #pragma once
 #include <vector>
+#include <string>
 #include <objects/TriangleFace.h>
+#include <objects/Renderable.h>
+#include <render/Shader.h>
+#include <glm/glm.hpp>
 
-class Button {
+class Button { 
 public:
 	Button() = default;
 	~Button() = default;

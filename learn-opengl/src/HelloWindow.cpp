@@ -11,6 +11,7 @@
 #include <misc/ModelRenderScene.h>
 #include <objects/Text.h>
 #include <objects/Character.h>
+#include <objects/Button_v2.h>
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow* window);
@@ -53,6 +54,7 @@ int main()
     }
 
     Text peepeepoopoo;
+    Button_v2 button2(-0.95f, -0.6f, 0.95f, 0.85f);
 
     // render loop
     // -----------
@@ -67,7 +69,8 @@ int main()
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        ModelRenderScene::getInstance().render();
+        //ModelRenderScene::getInstance().render();
+        button2.render();
         peepeepoopoo.render();
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)

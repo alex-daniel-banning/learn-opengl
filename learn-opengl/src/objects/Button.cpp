@@ -51,3 +51,4 @@ std::vector<float> Button::generateVertexBufferData() {
 	}
 	return bufferData;
 }
+

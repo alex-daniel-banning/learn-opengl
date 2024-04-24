@@ -22,6 +22,17 @@ const char* Shaders::getModelFragmentShader() {
 		"}\n\0";
 }
 
+const char* Shaders::getModelFragmentShaderConfigurableColor() {
+	return
+		"#version 330 core\n"
+		"out vec4 FragColor;\n"
+		"uniform vec4 color;\n"
+		"void main()\n"
+		"{\n"
+		"  FragColor = color;\n"
+		"}\n\0";
+}
+
 const char* Shaders::getTextVertexShader() {
 	return
 		"#version 330 core\n"
