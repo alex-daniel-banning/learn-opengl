@@ -2,6 +2,7 @@
 #include <string>
 #include <vector>
 #include <objects/Renderable.h>
+#include <objects/Text.h>
 #include <render/Shader.h>
 #include <glm/glm.hpp>
 
@@ -16,13 +17,15 @@ public:
 
 	Button_v2(float left, float right, float top, float bottom);
 
-	void render();
+	void render() const;
 
 private:
 	Shader m_shader;
-	std::string m_text;
+	Text m_text;
 	std::vector<float> m_bufferData;
 	glm::vec3 m_color;
 	unsigned int m_VBO, m_VAO;
+	float m_left, m_right, m_top, m_bottom;
+	void generateBufferData();
 };
 

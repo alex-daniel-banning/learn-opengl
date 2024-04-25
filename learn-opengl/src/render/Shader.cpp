@@ -61,10 +61,10 @@ Shader& Shader::operator=(Shader&& other) noexcept {
 	return *this;
 }
 
-void Shader::use() {
+void Shader::use() const {
 	glUseProgram(ID);
 }
 
-unsigned int Shader::getID() {
+unsigned int Shader::getID() const {
 	return ID;
 }

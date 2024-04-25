@@ -5,14 +5,6 @@
 #include <misc/Characters.h>
 
 Text::Text() : m_VAO(0), m_VBO(0) {
-	//m_shader = Shader2();
-	//m_text = "";
-	//m_x = 0.0f;
-	//m_y = 0.0f;
-	//m_scale = 0.5f;
-	//m_color = glm::vec3(0.5, 0.8f, 0.2f);
-	//m_VAO = 0;
-	//m_VBO = 0;
 	m_shader = Shader(Shaders::getTextVertexShader(), Shaders::getTextFragmentShader());
 	// ----
     glm::mat4 projection = glm::ortho(0.0f, 800.0f, 0.0f, 600.0f);
@@ -24,15 +16,7 @@ Text::Text() : m_VAO(0), m_VBO(0) {
 	m_y = 25.0f;
 	m_scale = 0.5f;
 	m_color = glm::vec3(0.3, 0.7f, 0.9f);
-	glGenVertexArrays(1, &m_VAO);
-	glGenBuffers(1, &m_VBO);
-	glBindVertexArray(m_VAO);
-	glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 6 * 4, NULL, GL_DYNAMIC_DRAW);
-	glEnableVertexAttribArray(0); // not sure what this does
-	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), 0);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindVertexArray(0);
+	initializeGLComponents();
 }
 
 Text::Text(const Text& other) {
@@ -82,7 +66,31 @@ Text& Text::operator=(Text&& other) noexcept {
 	return *this;
 }
 
-void Text::render() {
+Text::Text(	const std::string text,
+			const float viewportWidth,
+			const float viewportHeight,
+			const float normalizedLeft,
+			const float normalizedRight,
+			const float normalizedTop,
+			const float normalizedBottom,
+			const float scale) : m_VAO(0), m_VBO(0) {
+	m_shader = Shader(Shaders::getTextVertexShader(), Shaders::getTextFragmentShader());
+	// ----
+    glm::mat4 projection = glm::ortho(0.0f, viewportWidth, 0.0f, viewportHeight);
+    m_shader.use();
+    glUniformMatrix4fv(glGetUniformLocation(m_shader.getID(), "projection"), 1, GL_FALSE, glm::value_ptr(projection));
+	// ----
+	m_text = text;
+	//m_x = normalizedLeft * viewportWidth;
+	m_x = (viewportWidth / 2) + ((viewportWidth / 2) * normalizedLeft);
+	//m_y = normalizedBottom * viewportHeight;
+	m_y = (viewportHeight / 2) + ((viewportHeight / 2) * normalizedBottom);
+	m_scale = scale;
+	m_color = glm::vec3(0.0f, 0.0f, 0.0f);
+	initializeGLComponents();
+}
+
+void Text::render() const {
 	m_shader.use();
 	glUniform3f(glGetUniformLocation(m_shader.getID(), "textColor"), m_color.x, m_color.y, m_color.z);
 	glActiveTexture(GL_TEXTURE0);
@@ -124,3 +132,16 @@ void Text::render() {
 	glBindVertexArray(0);
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
+
+void Text::initializeGLComponents() {
+	glGenVertexArrays(1, &m_VAO);
+	glGenBuffers(1, &m_VBO);
+	glBindVertexArray(m_VAO);
+	glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 6 * 4, NULL, GL_DYNAMIC_DRAW);
+	glEnableVertexAttribArray(0); // not sure what this does
+	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), 0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindVertexArray(0);
+}
+

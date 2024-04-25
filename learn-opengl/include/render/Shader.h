@@ -10,8 +10,8 @@ public:
 	Shader& operator=(const Shader& other) = delete;
 	Shader& operator=(Shader&& other) noexcept;
 
-	void use();
-	unsigned int getID();
+	void use() const;
+	unsigned int getID() const;
 
 private:
 	unsigned int ID;

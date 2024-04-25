@@ -104,5 +104,8 @@
     <ClInclude Include="include\objects\Button_v2.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\objects\Scene.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

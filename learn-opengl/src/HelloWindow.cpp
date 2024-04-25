@@ -9,6 +9,7 @@
 #include FT_FREETYPE_H
 
 #include <misc/ModelRenderScene.h>
+#include <objects/Scene.h>
 #include <objects/Text.h>
 #include <objects/Character.h>
 #include <objects/Button_v2.h>
@@ -35,6 +36,7 @@ int main()
 
     // glfw window creation
     // --------------------
+    glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
     GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "LearnOpenGL", NULL, NULL);
     if (window == NULL)
     {
@@ -54,7 +56,9 @@ int main()
     }
 
     Text peepeepoopoo;
-    Button_v2 button2(-0.95f, -0.6f, 0.95f, 0.85f);
+    std::shared_ptr<Renderable> button2 = std::make_shared<Button_v2>(-0.95f, -0.6f, 0.95f, 0.85f);
+    Scene scene;
+    scene.addObject(button2);
 
     // render loop
     // -----------
@@ -70,8 +74,9 @@ int main()
         glClear(GL_COLOR_BUFFER_BIT);
 
         //ModelRenderScene::getInstance().render();
-        button2.render();
-        peepeepoopoo.render();
+        //button2.render();
+        //peepeepoopoo.render();
+        scene.renderScene();
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------

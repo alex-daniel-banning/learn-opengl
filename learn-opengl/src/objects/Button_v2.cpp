@@ -1,14 +1,19 @@
-#include <glad/glad.h>
 #include <objects/Button_v2.h>
+#include <glad/glad.h>
 #include <misc/Shaders.h>
 
 // fix later, make default have resonable default values and generate vertices base on static constants
 Button_v2::Button_v2() : m_VAO(0), m_VBO(0) {
 	m_shader = Shader(Shaders::getTextVertexShader(), Shaders::getTextFragmentShader());
-	m_text = "Button_v2";
+	m_text = Text();
 	m_bufferData = {};
 	m_color = glm::vec3(1.0f, 1.0f, 1.0f);
-	// todo setup vao/vbo/bufferdata
+	m_left = -0.5f;
+	m_right = 0.5f;
+	m_top = 0.5f;
+	m_bottom = -0.5f;
+	generateBufferData();
+
     // configure VAO/VBO for model
     glGenVertexArrays(1, &m_VAO);
     glGenBuffers(1, &m_VBO);
@@ -28,6 +33,10 @@ Button_v2::Button_v2(const Button_v2& other) {
 	m_bufferData = std::vector(other.m_bufferData);
 	m_VBO = other.m_VBO;
 	m_VAO = other.m_VAO;
+	m_left = other.m_left;
+	m_right = other.m_right;
+	m_top = other.m_top;
+	m_bottom = other.m_bottom;
 }
 
 Button_v2& Button_v2::operator=(const Button_v2& other) {
@@ -38,35 +47,29 @@ Button_v2& Button_v2::operator=(const Button_v2& other) {
 		m_bufferData = std::vector(other.m_bufferData);
 		m_VBO = other.m_VBO;
 		m_VAO = other.m_VAO;
+		m_left = other.m_left;
+		m_right = other.m_right;
+		m_top = other.m_top;
+		m_bottom = other.m_bottom;
 	}
 	return *this;
 }
 
 Button_v2::Button_v2(float left, float right, float top, float bottom) {
-	m_text = "Button 2!";
 	m_color = glm::vec3(0.7f, 0.7f, 0.7f);
 	m_shader = Shader(Shaders::getModelVertexShader(), Shaders::getModelFragmentShaderConfigurableColor());
+	m_left = left;
+	m_right = right;
+	m_top = top;
+	m_bottom = bottom;
+	m_text = Text("Select model", 800.0f, 600.0f, m_left, m_right, m_top, m_bottom, 1.0f);
+	//m_text = Text();
 
 	GLint colorLoc = glGetUniformLocation(m_shader.getID(), "color");
 	m_shader.use();
 	glUniform4f(colorLoc, m_color.x, m_color.y, m_color.z, 1.0f);
 
-	std::vector<glm::vec3> vertices = {
-		glm::vec3(left,	top, 0.0f),
-		glm::vec3(right, top, 0.0f),
-		glm::vec3(right, bottom, 0.0f),
-		glm::vec3(left, bottom, 0.0f)
-	};
-	int indices[6] = {
-		0,	1,	2,
-		2,	3,	0
-	};
-	for (int i : indices) {
-		glm::vec3 vertex = vertices[i];
-		m_bufferData.push_back(vertex.x);
-		m_bufferData.push_back(vertex.y);
-		m_bufferData.push_back(vertex.z);
-	}
+	generateBufferData();
 
     // configure VAO/VBO for model
     glGenVertexArrays(1, &m_VAO);
@@ -80,7 +83,7 @@ Button_v2::Button_v2(float left, float right, float top, float bottom) {
     glBindVertexArray(0);
 }
 
-void Button_v2::render() {
+void Button_v2::render() const {
 	m_shader.use();
 	glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
 	glBindVertexArray(m_VAO);
@@ -92,4 +95,25 @@ void Button_v2::render() {
 	glDrawArrays(GL_TRIANGLES, 0, m_bufferData.size());
 	glBindVertexArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	m_text.render();
+}
+
+void Button_v2::generateBufferData() {
+	m_bufferData.clear();
+	std::vector<glm::vec3> vertices = {
+		glm::vec3(m_left,	m_top,		0.0f),
+		glm::vec3(m_right,	m_top,		0.0f),
+		glm::vec3(m_right,	m_bottom,	0.0f),
+		glm::vec3(m_left,	m_bottom,	0.0f)
+	};
+	int indices[6] = {
+		0,	1,	2,
+		2,	3,	0
+	};
+	for (int i : indices) {
+		glm::vec3 vertex = vertices[i];
+		m_bufferData.push_back(vertex.x);
+		m_bufferData.push_back(vertex.y);
+		m_bufferData.push_back(vertex.z);
+	}
 }

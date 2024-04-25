@@ -45,6 +45,7 @@
     <ClInclude Include="include\objects\Button_v2.h" />
     <ClInclude Include="include\objects\Character.h" />
     <ClInclude Include="include\objects\Renderable.h" />
+    <ClInclude Include="include\objects\Scene.h" />
     <ClInclude Include="include\objects\Text.h" />
     <ClInclude Include="include\objects\TriangleFace.h" />
     <ClInclude Include="include\objects\Model.h" />

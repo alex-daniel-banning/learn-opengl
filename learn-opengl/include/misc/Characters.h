@@ -52,7 +52,7 @@ private:
 		    std::cout << "ERROR::FREETYPE: Failed to load font" << std::endl;
 		} else {
             // set size to load glyphs as
-            FT_Set_Pixel_Sizes(face, 0, 48);
+            FT_Set_Pixel_Sizes(face, 0, 32);
 
             // disable byte-alignment restriction
             glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
