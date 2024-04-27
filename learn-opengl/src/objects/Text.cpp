@@ -75,17 +75,36 @@ Text::Text(	const std::string text,
 			const float normalizedBottom,
 			const float scale) : m_VAO(0), m_VBO(0) {
 	m_shader = Shader(Shaders::getTextVertexShader(), Shaders::getTextFragmentShader());
-	// ----
     glm::mat4 projection = glm::ortho(0.0f, viewportWidth, 0.0f, viewportHeight);
     m_shader.use();
     glUniformMatrix4fv(glGetUniformLocation(m_shader.getID(), "projection"), 1, GL_FALSE, glm::value_ptr(projection));
-	// ----
+
 	m_text = text;
-	//m_x = normalizedLeft * viewportWidth;
 	m_x = (viewportWidth / 2) + ((viewportWidth / 2) * normalizedLeft);
-	//m_y = normalizedBottom * viewportHeight;
 	m_y = (viewportHeight / 2) + ((viewportHeight / 2) * normalizedBottom);
-	m_scale = scale;
+
+	unsigned int totalAdvance = calculateTextWidth();
+	float width = ((normalizedRight - normalizedLeft) / 2) * viewportWidth;
+	float horizontalAdjustedScale = width / totalAdvance;
+
+	unsigned int textHeight = (calculateTextHeight());
+	float height = ((normalizedTop - normalizedBottom) / 2) * viewportHeight;
+	float verticalAdjustedScale = height / textHeight;
+	
+	if (horizontalAdjustedScale < verticalAdjustedScale) {
+		m_scale = horizontalAdjustedScale;
+	}
+	else {
+		m_scale = verticalAdjustedScale;
+	}
+	m_scale = 0.9 * m_scale;
+
+	// shift up a bit from baseline
+	m_y = m_y - Characters::getFontDescender() + (0.15f * height);
+
+	// todo center text horizontally
+	m_x += (width - (totalAdvance * m_scale)) / 2;
+	
 	m_color = glm::vec3(0.0f, 0.0f, 0.0f);
 	initializeGLComponents();
 }
@@ -143,5 +162,23 @@ void Text::initializeGLComponents() {
 	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), 0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
+}
+
+unsigned int Text::calculateTextWidth() {
+	unsigned int width = 0;
+	for (char c : m_text) {
+		width += Characters::get(c).Advance;
+	}
+	return width >> 6; // Advance is measured in 1/64th pixels.
+}
+
+unsigned int Text::calculateTextHeight() {
+	int height = 0;
+	for (char c : m_text) {
+		if (Characters::get(c).height > height) {
+			height = Characters::get(c).height;
+		}
+	}
+	return height >> 6;
 }
 

@@ -21,10 +21,14 @@ public:
 	static Character get(const GLchar& key) {
 		return getInstance().map[key];
 	}
+    static int getFontDescender() {
+        return getInstance().fontDescender >> 6;
+    }
 private:
 	std::map<GLchar, Character> map;
+    int fontDescender;
 	
-	Characters() {
+    Characters() : fontDescender(0) {
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         Shader shader(Shaders::getTextVertexShader(), Shaders::getTextFragmentShader());
@@ -91,10 +95,17 @@ private:
                     texture,
                     glm::ivec2(face->glyph->bitmap.width, face->glyph->bitmap.rows),
                     glm::ivec2(face->glyph->bitmap_left, face->glyph->bitmap_top),
-                    static_cast<unsigned int>(face->glyph->advance.x)
+                    static_cast<unsigned int>(face->glyph->advance.x),
+                    face->size->metrics.height
                 };
                 map.insert(std::pair<char, Character>(c, character));
             }
+            // Load character glyph 
+            if (FT_Load_Char(face, 0, FT_LOAD_RENDER)) {
+                std::cout << "ERROR::FREETYTPE: Failed to load Glyph" << std::endl;
+            }
+            fontDescender = face->descender;
+
             glBindTexture(GL_TEXTURE_2D, 0);
         }
         // destroy FreeType once we're finished

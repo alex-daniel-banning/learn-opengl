@@ -56,9 +56,9 @@ int main()
     }
 
     Text peepeepoopoo;
-    std::shared_ptr<Renderable> button2 = std::make_shared<Button_v2>(-0.95f, -0.6f, 0.95f, 0.85f);
+    std::shared_ptr<Renderable> button = std::make_shared<Button_v2>(-0.95f, -0.6f, 0.95f, 0.85f);
     Scene scene;
-    scene.addObject(button2);
+    scene.addObject(button);
 
     // render loop
     // -----------

@@ -30,4 +30,6 @@ private:
 	glm::vec3 m_color;
 	unsigned int m_VAO, m_VBO;
 	void initializeGLComponents();
+	unsigned int calculateTextWidth();
+	unsigned int calculateTextHeight();
 };

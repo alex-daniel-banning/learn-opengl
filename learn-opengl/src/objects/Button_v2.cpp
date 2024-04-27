@@ -62,8 +62,7 @@ Button_v2::Button_v2(float left, float right, float top, float bottom) {
 	m_right = right;
 	m_top = top;
 	m_bottom = bottom;
-	m_text = Text("Select model", 800.0f, 600.0f, m_left, m_right, m_top, m_bottom, 1.0f);
-	//m_text = Text();
+	m_text = Text("Select Model", 800.0f, 600.0f, m_left, m_right, m_top, m_bottom, 1.0f);
 
 	GLint colorLoc = glGetUniformLocation(m_shader.getID(), "color");
 	m_shader.use();
