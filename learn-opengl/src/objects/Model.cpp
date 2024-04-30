@@ -116,7 +116,6 @@ void Model::render() const {
 	
 	std::vector<float> bufferData = generateBufferData();
 	m_shader.use();
-    std::cout << glGetError() << std::endl;
 	glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
 	glBindVertexArray(m_VAO);
 	glBufferData(
