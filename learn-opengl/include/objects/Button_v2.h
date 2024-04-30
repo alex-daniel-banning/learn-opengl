@@ -15,9 +15,15 @@ public:
 	Button_v2& operator=(const Button_v2& other);
 	Button_v2& operator=(Button_v2&& other) noexcept = default;
 
+	/* These params are in normalized device format */
 	Button_v2(float left, float right, float top, float bottom);
 
 	void render() const;
+
+	float getLeft();
+	float getRight();
+	float getTop();
+	float getBottom();
 
 private:
 	Shader m_shader;

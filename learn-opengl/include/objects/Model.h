@@ -2,9 +2,11 @@
 
 #include <objects/Vertex.h>
 #include <objects/TriangleFace.h>
+#include <objects/Renderable.h>
+#include <render/Shader.h>
 #include <vector>
 
-class Model {
+class Model : public Renderable {
 	
 public:
 	Model() = default;
@@ -15,8 +17,18 @@ public:
 	Model& operator=(const Model& other);
 	Model& operator=(Model&& other) noexcept;
 
-	std::vector<float> generateVertexBufferData(const Vertex vantagePoint, float distanceFromScreen);
+	void setVantagePoint(Vertex vantagePoint);
+	void setDistanceFromScreen(float distanceFromScreen);
+	void setShader(Shader& shader);
+
+	void render() const;
 
 private:
 	std::vector<TriangleFace> m_faces;
+	Vertex m_vantagePoint;
+	float m_distanceFromScreen;
+	Shader m_shader;
+	unsigned int m_VAO, m_VBO;
+
+	std::vector<float> generateBufferData() const;
 };

@@ -8,7 +8,6 @@
 #include <ft2build.h>
 #include FT_FREETYPE_H
 
-#include <misc/ModelRenderScene.h>
 #include <objects/Scene.h>
 #include <objects/Text.h>
 #include <objects/Character.h>
@@ -55,10 +54,7 @@ int main()
         return -1;
     }
 
-    Text peepeepoopoo;
-    std::shared_ptr<Renderable> button = std::make_shared<Button_v2>(-0.95f, -0.6f, 0.95f, 0.85f);
-    Scene scene;
-    scene.addObject(button);
+    glfwSetMouseButtonCallback(window, Scene::handleInput);
 
     // render loop
     // -----------
@@ -73,10 +69,7 @@ int main()
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        //ModelRenderScene::getInstance().render();
-        //button2.render();
-        //peepeepoopoo.render();
-        scene.renderScene();
+        Scene::render();
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------

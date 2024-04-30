@@ -1,10 +1,11 @@
-#include <objects/Button_v2.h>
 #include <glad/glad.h>
+#include <objects/Button_v2.h>
 #include <misc/Shaders.h>
+#include <iostream>
 
 // fix later, make default have resonable default values and generate vertices base on static constants
 Button_v2::Button_v2() : m_VAO(0), m_VBO(0) {
-	m_shader = Shader(Shaders::getTextVertexShader(), Shaders::getTextFragmentShader());
+	m_shader = Shader(Shaders::getModelVertexShader(), Shaders::getModelFragmentShader());
 	m_text = Text();
 	m_bufferData = {};
 	m_color = glm::vec3(1.0f, 1.0f, 1.0f);
@@ -95,6 +96,22 @@ void Button_v2::render() const {
 	glBindVertexArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	m_text.render();
+}
+
+float Button_v2::getLeft() {
+	return m_left;
+}
+
+float Button_v2::getRight() {
+	return m_right;
+}
+
+float Button_v2::getTop() {
+	return m_top;
+}
+
+float Button_v2::getBottom() {
+	return m_bottom;
 }
 
 void Button_v2::generateBufferData() {
