@@ -26,7 +26,6 @@
     <ClCompile Include="src\misc\SolutionDirectory.cpp" />
     <ClCompile Include="src\misc\StringConverter.cpp" />
     <ClCompile Include="src\objects\Button.cpp" />
-    <ClCompile Include="src\objects\Button_v2.cpp" />
     <ClCompile Include="src\objects\Text.cpp" />
     <ClCompile Include="src\objects\TriangleFace.cpp" />
     <ClCompile Include="src\objects\Model.cpp" />
@@ -40,7 +39,6 @@
     <ClInclude Include="include\misc\SolutionDirectory.h" />
     <ClInclude Include="include\misc\StringConverter.h" />
     <ClInclude Include="include\objects\Button.h" />
-    <ClInclude Include="include\objects\Button_v2.h" />
     <ClInclude Include="include\objects\Character.h" />
     <ClInclude Include="include\objects\Renderable.h" />
     <ClInclude Include="include\objects\Scene.h" />

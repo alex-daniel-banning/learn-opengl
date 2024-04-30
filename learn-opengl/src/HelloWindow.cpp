@@ -11,7 +11,6 @@
 #include <objects/Scene.h>
 #include <objects/Text.h>
 #include <objects/Character.h>
-#include <objects/Button_v2.h>
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow* window);

@@ -30,9 +30,6 @@
     <ClCompile Include="src\misc\Shaders.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\objects\Button.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\misc\ModelFileInputReader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -48,7 +45,7 @@
     <ClCompile Include="src\objects\Text.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\objects\Button_v2.cpp">
+    <ClCompile Include="src\objects\Button.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -63,9 +60,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\misc\Shaders.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\objects\Button.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\misc\ModelFileInputReader.h">
@@ -95,7 +89,7 @@
     <ClInclude Include="include\objects\Renderable.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\objects\Button_v2.h">
+    <ClInclude Include="include\objects\Button.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\objects\Scene.h">

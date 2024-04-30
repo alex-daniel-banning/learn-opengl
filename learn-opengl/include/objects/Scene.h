@@ -4,7 +4,7 @@
 #include <memory>
 #include <iostream>
 #include <objects/Renderable.h>
-#include <objects/Button_v2.h>
+#include <objects/Button.h>
 #include <GLFW/glfw3.h>
 #include <misc/ModelFileInputReader.h>
 #include <misc/StringConverter.h>
@@ -68,7 +68,7 @@ public:
 	}
 
 private:
-	Button_v2 m_selectModelButton;
+	Button m_selectModelButton;
 	Model m_mainModel;
 	Shader m_modelShader;
 	Vertex m_vantagePoint;
@@ -77,7 +77,7 @@ private:
 	Scene() {
 		m_distanceFromScreen = 1.0f;
 		m_vantagePoint = Vertex(0.0f, 0.0f, 0.0f);
-		m_selectModelButton = Button_v2(-0.95f, -0.6f, 0.95f, 0.85f);
+		m_selectModelButton = Button(-0.95f, -0.6f, 0.95f, 0.85f);
 		m_mainModel = ModelFileInputReader::readModelFromFile("C:\\Users\\banni\\source\\repos\\learn-opengl\\resources\\models\\cube.model");
 		m_modelShader = Shader(Shaders::getModelVertexShader(), Shaders::getModelFragmentShader());
 	}
