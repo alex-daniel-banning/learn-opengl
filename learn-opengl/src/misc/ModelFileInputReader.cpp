@@ -8,11 +8,7 @@
 #include <fstream>
 #include <sstream>
 
-Model ModelFileInputReader::readModelFromFile(PWSTR filepath_pwstr) {
-	
-	/* Convert to string */
-	std::string filepath = StringConverter::convertToString(filepath_pwstr);
-
+Model ModelFileInputReader::readModelFromFile(std::string filepath) {
 	validateFileType(filepath);
 
 	/* Handle first section */
@@ -92,6 +88,13 @@ Model ModelFileInputReader::readModelFromFile(PWSTR filepath_pwstr) {
 		triangleFaces.push_back(triangleFace);
 	}
 	return Model(std::move(triangleFaces));
+}
+
+Model ModelFileInputReader::readModelFromFile(PWSTR filepath_pwstr) {
+	
+	/* Convert to string */
+	std::string filepath = StringConverter::convertToString(filepath_pwstr);
+	return readModelFromFile(filepath);
 }
 
 std::string ModelFileInputReader::trim(const std::string& str) {

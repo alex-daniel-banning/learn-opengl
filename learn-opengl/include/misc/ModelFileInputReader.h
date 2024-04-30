@@ -6,6 +6,7 @@
 class ModelFileInputReader {
 public:
 	static Model readModelFromFile(PWSTR file);
+	static Model readModelFromFile(std::string filepath);
 
 private:
 	static std::string trim(const std::string& str);
