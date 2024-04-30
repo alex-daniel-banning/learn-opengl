@@ -111,6 +111,9 @@ void Model::setShader(Shader& shader) {
 }
 
 void Model::render() const {
+	// Activate wireframe mode
+	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	
 	std::vector<float> bufferData = generateBufferData();
 	m_shader.use();
     std::cout << glGetError() << std::endl;
@@ -124,4 +127,6 @@ void Model::render() const {
 	glDrawArrays(GL_TRIANGLES, 0, bufferData.size());
 	glBindVertexArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 }
