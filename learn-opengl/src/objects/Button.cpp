@@ -56,14 +56,14 @@ Button& Button::operator=(const Button& other) {
 	return *this;
 }
 
-Button::Button(float left, float right, float top, float bottom) {
+Button::Button(float left, float right, float top, float bottom, std::string text) {
 	m_color = glm::vec3(0.7f, 0.7f, 0.7f);
 	m_shader = Shader(Shaders::getModelVertexShader(), Shaders::getModelFragmentShaderConfigurableColor());
 	m_left = left;
 	m_right = right;
 	m_top = top;
 	m_bottom = bottom;
-	m_text = Text("Select Model", 800.0f, 600.0f, m_left, m_right, m_top, m_bottom, 1.0f);
+	m_text = Text(text, 800.0f, 600.0f, m_left, m_right, m_top, m_bottom, 1.0f);
 
 	GLint colorLoc = glGetUniformLocation(m_shader.getID(), "color");
 	m_shader.use();

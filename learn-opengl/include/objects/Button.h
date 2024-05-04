@@ -16,7 +16,7 @@ public:
 	Button& operator=(Button&& other) noexcept = default;
 
 	/* These params are in normalized device format */
-	Button(float left, float right, float top, float bottom);
+	Button(float left, float right, float top, float bottom, std::string text);
 
 	void render() const;
 

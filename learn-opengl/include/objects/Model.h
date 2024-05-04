@@ -2,11 +2,10 @@
 
 #include <objects/Vertex.h>
 #include <objects/TriangleFace.h>
-#include <objects/Renderable.h>
 #include <render/Shader.h>
 #include <vector>
 
-class Model : public Renderable {
+class Model {
 	
 public:
 	Model() = default;
@@ -20,8 +19,10 @@ public:
 	void setVantagePoint(Vertex vantagePoint);
 	void setDistanceFromScreen(float distanceFromScreen);
 	void setShader(Shader& shader);
+	void incrementRotation(float rotation);
+	void setZTranslation(float translation);
 
-	void render() const;
+	void render(const Vertex& vantagePoint, const float& distanceFromScreen) const;
 
 private:
 	std::vector<TriangleFace> m_faces;
@@ -30,5 +31,9 @@ private:
 	Shader m_shader;
 	unsigned int m_VAO, m_VBO;
 
-	std::vector<float> generateBufferData() const;
+	// rotations in radians
+	float m_rotation;
+	float m_zTranslation;
+
+	std::vector<float> generateBufferData(const Vertex& vantagePoint, const float& distanceFromScreen) const;
 };

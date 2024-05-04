@@ -7,6 +7,7 @@
 #include <objects/Vertex.h>
 #include <misc/Shaders.h>
 #include <iostream>
+#include <cmath>
 
 Model::Model(const Model& other) {
 	m_VAO = other.m_VAO;
@@ -75,19 +76,21 @@ Model& Model::operator=(Model&& other) noexcept {
 	return *this;
 }
 
-std::vector<float> Model::generateBufferData() const {
+std::vector<float> Model::generateBufferData(const Vertex& vantagePoint, const float& distanceFromScreen) const {
 	std::vector<float> bufferData;
 	for (TriangleFace face : m_faces) {
-		if (face.isVisible(m_vantagePoint)) {
+		if (face.isVisible(vantagePoint, m_rotation, m_zTranslation)) {
 			for (Vertex vertex : face.vertices) {
-				float pX = vertex.x;
+				//float pX = vertex.x;
+				float pX = vertex.x * std::cos(m_rotation);
 				float pY = vertex.y;
-				float pZ = vertex.z;
-				float eX = m_vantagePoint.x;
-				float eY = m_vantagePoint.y;
-				float eZ = m_vantagePoint.z;
-				float xPrime = ((pX - eX) * m_distanceFromScreen) / (pZ - eZ);
-				float yPrime = ((pY - eY) * m_distanceFromScreen) / (pZ - eZ);
+				//float pZ = vertex.z;
+				float pZ = (vertex.z * std::sin(m_rotation)) + m_zTranslation;
+				float eX = vantagePoint.x;
+				float eY = vantagePoint.y;
+				float eZ = vantagePoint.z;
+				float xPrime = ((pX - eX) * distanceFromScreen) / (pZ - eZ);
+				float yPrime = ((pY - eY) * distanceFromScreen) / (pZ - eZ);
 				float zPrime = 0.0f;
 				bufferData.push_back(xPrime);
 				bufferData.push_back(yPrime);
@@ -110,11 +113,19 @@ void Model::setShader(Shader& shader) {
 	m_shader = Shader(shader);
 }
 
-void Model::render() const {
+void Model::incrementRotation(float rotation) {
+	m_rotation += rotation;
+}
+
+void Model::setZTranslation(float translation) {
+	m_zTranslation = translation;
+}
+
+void Model::render(const Vertex& vantagePoint, const float& distanceFromScreen) const {
 	// Activate wireframe mode
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	
-	std::vector<float> bufferData = generateBufferData();
+	std::vector<float> bufferData = generateBufferData(vantagePoint, distanceFromScreen);
 	m_shader.use();
 	glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
 	glBindVertexArray(m_VAO);
