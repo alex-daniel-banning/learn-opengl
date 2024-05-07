@@ -3,6 +3,8 @@
 
 #include <iostream>
 
+#include <Shader.h>
+
 const char* vertexShaderSource =
 	"#version 330 core\n"
 	"layout (location = 0) in vec3 aPos;\n"
@@ -113,6 +115,12 @@ int main()
 	int nrAttributes;
 	glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &nrAttributes);
 	std::cout << "Maximum nr of vertex attributes supported: " << nrAttributes << std::endl;
+
+	// debug
+	const char* fraggg = fragmentShaderSource;
+
+	Shader ourShader("C:\\Users\\banni\\source\\repos\\learn-opengl\\learn-opengl\\resources\\shaders\\basic_shader\\shader.vs",
+		"C:\\Users\\banni\\source\\repos\\learn-opengl\\learn-opengl\\resources\\shaders\\basic_shader\\shader.fs", fraggg);
 
 	while (!glfwWindowShouldClose(window))
 	{
