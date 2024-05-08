@@ -78,9 +78,6 @@ int main()
 
 	Shader ourShader("C:\\Users\\banni\\source\\repos\\learn-opengl\\learn-opengl\\resources\\shaders\\basic_shader\\shader.vs",
 		"C:\\Users\\banni\\source\\repos\\learn-opengl\\learn-opengl\\resources\\shaders\\basic_shader\\shader.fs");
-	ourShader.use();
-	glGetUniformLocation(ourShader.ID, "horizontalOffset");
-	ourShader.setFloat("horizontalOffset", 0.25f);
 
 	while (!glfwWindowShouldClose(window))
 	{
