@@ -78,6 +78,9 @@ int main()
 
 	Shader ourShader("C:\\Users\\banni\\source\\repos\\learn-opengl\\learn-opengl\\resources\\shaders\\basic_shader\\shader.vs",
 		"C:\\Users\\banni\\source\\repos\\learn-opengl\\learn-opengl\\resources\\shaders\\basic_shader\\shader.fs");
+	ourShader.use();
+	glGetUniformLocation(ourShader.ID, "horizontalOffset");
+	ourShader.setFloat("horizontalOffset", 0.25f);
 
 	while (!glfwWindowShouldClose(window))
 	{
@@ -87,7 +90,6 @@ int main()
 		glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 		
-		//glUseProgram(shaderProgram);
 		ourShader.use();
 
 		glBindVertexArray(VAO);
