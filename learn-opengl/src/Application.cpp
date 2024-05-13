@@ -62,7 +62,7 @@ int main()
 
     // configure global opengl state
     // -----------------------------
-    //glEnable(GL_DEPTH_TEST);
+    glEnable(GL_DEPTH_TEST);
 
     // build and compile our shader zprogram
     // ------------------------------------
@@ -118,13 +118,12 @@ int main()
         // render
         // ------
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // activate shader
         ourShader.use();
         glBindVertexArray(VAO);
 
-        std::cout << glGetError() << std::endl;
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
