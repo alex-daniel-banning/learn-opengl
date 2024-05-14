@@ -59,6 +59,7 @@ int main()
         std::cout << "Failed to initialize GLAD" << std::endl;
         return -1;
     }
+    glfwMakeContextCurrent(window);
 
     // configure global opengl state
     // -----------------------------
@@ -72,10 +73,10 @@ int main()
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------
     float vertices[] = {
-         1.0f, 1.0f, 0.0f,  // top right
-         1.0f, 0.0f, 0.0f,  // bottom right
-        -1.0f, 0.0f, 0.0f,  // bottom left
-        -1.0f, 1.0f, 0.0f   // top left
+         1.0f,  1.0f, 0.0f,  // top right
+         1.0f, -1.0f, 0.0f,  // bottom right
+        -1.0f, -1.0f, 0.0f,  // bottom left
+        -1.0f,  1.0f, 0.0f   // top left
     };
     unsigned int indices[] = {
        0, 1, 2,
@@ -104,10 +105,32 @@ int main()
     ourShader.use();
     ourShader.setVec4("color", 0.5f, 0.5f, 0.5f, 1.0f);
 
+    // orthographic projection stuff
+    float left = -1.0f;
+    float right = 1.0f;
+    float bottom = -1.0f;
+    float top = 1.0f;
+    float nearPlane = -5.0f; // SOLVED!, setting these to a higher value made the quad fall within the frustrum,
+    float farPlane = 5.0f;   // I think that it means that the near and far plan are relative, not sure if that's 100% accurate description of what's happening
+    glm::mat4 orthoProjection = glm::ortho(left, right, bottom, top, nearPlane, farPlane);
+    ourShader.setMat4("projection", orthoProjection);
+
+    glm::mat4 view = camera.GetViewMatrix();
+    ourShader.setMat4("view", view);
+
+    glm::mat4 model = glm::mat4(1.0f);
+    ourShader.setMat4("model", model);
+
+
     // render loop
     // -----------
     while (!glfwWindowShouldClose(window))
     {
+        // per-frame time logic
+        float currentFrame = static_cast<float>(glfwGetTime());
+        deltaTime = currentFrame - lastFrame;
+        lastFrame = currentFrame;
+
         // input
         // -----
         processInput(window);
@@ -149,14 +172,14 @@ void processInput(GLFWwindow* window)
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
 
-    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-        camera.ProcessKeyboard(FORWARD, deltaTime);
-    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-        camera.ProcessKeyboard(BACKWARD, deltaTime);
-    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-        camera.ProcessKeyboard(LEFT, deltaTime);
-    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-        camera.ProcessKeyboard(RIGHT, deltaTime);
+    //if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+    //    camera.ProcessKeyboard(FORWARD, deltaTime);
+    //if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+    //    camera.ProcessKeyboard(BACKWARD, deltaTime);
+    //if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+    //    camera.ProcessKeyboard(LEFT, deltaTime);
+    //if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+    //    camera.ProcessKeyboard(RIGHT, deltaTime);
 }
 
 // glfw: whenever the window size changed (by OS or user resize) this callback function executes
