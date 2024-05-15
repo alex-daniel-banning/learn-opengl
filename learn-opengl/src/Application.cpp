@@ -103,7 +103,6 @@ int main()
     glBindVertexArray(0);
  
     ourShader.use();
-    ourShader.setVec4("color", 0.5f, 0.5f, 0.5f, 1.0f);
 
     // orthographic projection stuff
     float left = -1.0f;
@@ -117,10 +116,6 @@ int main()
 
     glm::mat4 view = camera.GetViewMatrix();
     ourShader.setMat4("view", view);
-
-    glm::mat4 model = glm::mat4(1.0f);
-    ourShader.setMat4("model", model);
-
 
     // render loop
     // -----------
@@ -140,11 +135,41 @@ int main()
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        // activate shader
+        // draw grey section
         ourShader.use();
+        ourShader.setVec4("color", 0.5f, 0.5f, 0.5f, 1.0f);
+
+        glm::mat4 model = glm::mat4(1.0f);
+        model = glm::translate(model, glm::vec3(0.0f, -0.5f, 0.0f));
+        model = glm::scale(model, glm::vec3(1.0f, 0.5f, 1.0f));
+        ourShader.setMat4("model", model);
+        //glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+        // draw white stripes
+        ourShader.setVec4("color", 1.0f, 1.0f, 1.0f, 1.0f);
+        float sectionHeight = 0.5f; // shouldn't sectionHeifht be 1.0f?
+        int numStripes = 4;
+        float stripeWidth = sectionHeight / numStripes;
+        //float maxStripeWidth = 0.5f;
+        
+        //debug
+        int count = 0;
+
+        for (float distFromCenter = stripeWidth; distFromCenter < 1.0f; distFromCenter += (4 * stripeWidth))
+        {
+            glm::mat4 model2 = glm::mat4(1.0f);
+            model2 = glm::translate(model2, glm::vec3(0.0f, distFromCenter, 0.0f));
+            model2 = glm::scale(model2, glm::vec3(1.0f, stripeWidth, 1.0f));
+            ourShader.setMat4("model", model2);
+            glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+            count++;
+        }
+        
+        // draw black stripes
+
         glBindVertexArray(VAO);
 
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+        //glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
