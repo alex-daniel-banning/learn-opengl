@@ -143,29 +143,42 @@ int main()
         model = glm::translate(model, glm::vec3(0.0f, -0.5f, 0.0f));
         model = glm::scale(model, glm::vec3(1.0f, 0.5f, 1.0f));
         ourShader.setMat4("model", model);
-        //glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
-        // draw white stripes
-        ourShader.setVec4("color", 1.0f, 1.0f, 1.0f, 1.0f);
-        float sectionHeight = 0.5f; // shouldn't sectionHeifht be 1.0f?
-        int numStripes = 4;
-        float stripeWidth = sectionHeight / numStripes;
-        //float maxStripeWidth = 0.5f;
+        //// draw white stripes
+        //ourShader.setVec4("color", 1.0f, 1.0f, 1.0f, 1.0f);
+        //float NORMALIZED_SCR_HEIGHT = 2.0f;
+        //float sectionHeight = 1.0f;
+        //int numStripes = 2048 * 2 * 8; // this includes black and white stripes
+        //float stripeWidth = (sectionHeight / numStripes); // divide by two, because white stripes only cover half the available area. Black covers the rest.
+        //
+        //int count = 0; // debug
+        //for (int i = 0; i < numStripes / 2; i++)
+        //{
+        //    float distFromCenter = (stripeWidth / 2) + (stripeWidth * 2 * i);
+        //    glm::mat4 stripe = glm::mat4(1.0f);
+        //    stripe = glm::translate(stripe, glm::vec3(0.0f, distFromCenter, 0.0f));
+        //    stripe = glm::scale(stripe, glm::vec3(1.0f, stripeWidth / NORMALIZED_SCR_HEIGHT, 1.0f));
+        //    ourShader.setMat4("model", stripe);
+        //    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+        //    count++;
+        //}
+        //
+        //// draw black stripes
+        //ourShader.setVec4("color", 0.0f, 0.0f, 0.0f, 1.0f);
+        //
+        //count = 0; // debug
+        //for (int i = 0; i < numStripes / 2; i++)
+        //{
+        //    float distFromCenter = (stripeWidth / 2) + (stripeWidth * 2 * i) + stripeWidth;
+        //    glm::mat4 stripe = glm::mat4(1.0f);
+        //    stripe = glm::translate(stripe, glm::vec3(0.0f, distFromCenter, 0.0f));
+        //    stripe = glm::scale(stripe, glm::vec3(1.0f, stripeWidth / NORMALIZED_SCR_HEIGHT, 1.0f));
+        //    ourShader.setMat4("model", stripe);
+        //    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+        //    count++;
+        //}
         
-        //debug
-        int count = 0;
-
-        for (float distFromCenter = stripeWidth; distFromCenter < 1.0f; distFromCenter += (4 * stripeWidth))
-        {
-            glm::mat4 model2 = glm::mat4(1.0f);
-            model2 = glm::translate(model2, glm::vec3(0.0f, distFromCenter, 0.0f));
-            model2 = glm::scale(model2, glm::vec3(1.0f, stripeWidth, 1.0f));
-            ourShader.setMat4("model", model2);
-            glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-            count++;
-        }
-        
-        // draw black stripes
 
         glBindVertexArray(VAO);
 
