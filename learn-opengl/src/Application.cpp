@@ -17,13 +17,13 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void processInput(GLFWwindow* window);
 
 // settings
-const unsigned int SCR_WIDTH = 800;
-const unsigned int SCR_HEIGHT = 600;
+unsigned int screenWidth = 800;
+unsigned int screenHeight = 600;
 
 // camera
 Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
-float lastX = SCR_WIDTH / 2.0f;
-float lastY = SCR_HEIGHT / 2.0f;
+float lastX = screenWidth / 2.0f;
+float lastY = screenHeight / 2.0f;
 bool firstMouse = true;
 
 // timing
@@ -42,7 +42,7 @@ int main()
 
     // glfw window creation
     // --------------------
-    GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "LearnOpenGL", NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow(screenWidth, screenHeight, "LearnOpenGL", NULL, NULL);
     if (window == NULL)
     {
         std::cout << "Failed to create GLFW window" << std::endl;
@@ -145,44 +145,42 @@ int main()
         ourShader.setMat4("model", model);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
-        //// draw white stripes
-        //ourShader.setVec4("color", 1.0f, 1.0f, 1.0f, 1.0f);
-        //float NORMALIZED_SCR_HEIGHT = 2.0f;
-        //float sectionHeight = 1.0f;
-        //int numStripes = 2048 * 2 * 8; // this includes black and white stripes
-        //float stripeWidth = (sectionHeight / numStripes); // divide by two, because white stripes only cover half the available area. Black covers the rest.
-        //
-        //int count = 0; // debug
-        //for (int i = 0; i < numStripes / 2; i++)
-        //{
-        //    float distFromCenter = (stripeWidth / 2) + (stripeWidth * 2 * i);
-        //    glm::mat4 stripe = glm::mat4(1.0f);
-        //    stripe = glm::translate(stripe, glm::vec3(0.0f, distFromCenter, 0.0f));
-        //    stripe = glm::scale(stripe, glm::vec3(1.0f, stripeWidth / NORMALIZED_SCR_HEIGHT, 1.0f));
-        //    ourShader.setMat4("model", stripe);
-        //    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-        //    count++;
-        //}
-        //
-        //// draw black stripes
-        //ourShader.setVec4("color", 0.0f, 0.0f, 0.0f, 1.0f);
-        //
-        //count = 0; // debug
-        //for (int i = 0; i < numStripes / 2; i++)
-        //{
-        //    float distFromCenter = (stripeWidth / 2) + (stripeWidth * 2 * i) + stripeWidth;
-        //    glm::mat4 stripe = glm::mat4(1.0f);
-        //    stripe = glm::translate(stripe, glm::vec3(0.0f, distFromCenter, 0.0f));
-        //    stripe = glm::scale(stripe, glm::vec3(1.0f, stripeWidth / NORMALIZED_SCR_HEIGHT, 1.0f));
-        //    ourShader.setMat4("model", stripe);
-        //    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-        //    count++;
-        //}
+        // draw stripes
+        float normalizedScreenHeight = 2.0f;
+        float sectionHeight = 1.0f;
+        int numStripes = (screenHeight) / 2; // this includes black and white stripes
+        float stripeWidth = (sectionHeight / numStripes); // divide by two, because white stripes only cover half the available area. Black covers the rest.
         
+        // draw black stripes
+        ourShader.setVec4("color", 0.0f, 0.0f, 0.0f, 1.0f);
+        
+        int count = 0; // debug
+        for (int i = 0; i < numStripes / 2; i++)
+        {
+            float distFromCenter = (stripeWidth / 2) + (stripeWidth * 2 * i) + stripeWidth;
+            glm::mat4 stripe = glm::mat4(1.0f);
+            stripe = glm::translate(stripe, glm::vec3(0.0f, distFromCenter, 0.0f));
+            stripe = glm::scale(stripe, glm::vec3(1.0f, stripeWidth / normalizedScreenHeight, 1.0f));
+            ourShader.setMat4("model", stripe);
+            glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+            count++;
+        }
 
+        // draw white stripes
+        ourShader.setVec4("color", 1.0f, 1.0f, 1.0f, 1.0f);
+        count = 0; // debug
+        for (int i = 0; i < numStripes / 2; i++)
+        {
+            float distFromCenter = (stripeWidth / 2) + (stripeWidth * 2 * i);
+            glm::mat4 stripe = glm::mat4(1.0f);
+            stripe = glm::translate(stripe, glm::vec3(0.0f, distFromCenter, 0.0f));
+            stripe = glm::scale(stripe, glm::vec3(1.0f, stripeWidth / normalizedScreenHeight, 1.0f));
+            ourShader.setMat4("model", stripe);
+            glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+            count++;
+        }
+        
         glBindVertexArray(VAO);
-
-        //glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
@@ -227,6 +225,8 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
     // make sure the viewport matches the new window dimensions; note that width and 
     // height will be significantly larger than specified on retina displays.
     glViewport(0, 0, width, height);
+    screenWidth = width;
+    screenHeight = height;
 }
 
 
