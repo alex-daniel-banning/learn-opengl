@@ -28,17 +28,28 @@ public:
 		knobScale = DEFAULT_KNOB_SCALE;
 		knobHeight = knobScale.y * scale.y;
 		knobWidth = knobScale.x * scale.x;
+		knobTop = position.y - (0.5f * scale.y) + (0.5f * knobHeight);
+		knobBottom = knobTop - knobHeight;
 		knobMinX = position.x + knobWidth;
 		knobMaxX = position.x + scale.x - (2 * knobWidth);
 		knobPosition = glm::vec3(
 			knobMinX, // todo, update initial position to be tied to the greyness level
-			position.y - (0.5f * scale.y) + (0.5f * knobHeight),
+			knobTop,
 			position.z + 0.1f); 
+		knobLeft = knobPosition.x;
+		knobRight = knobLeft + knobWidth;
+		pressed = false;
 	}
 
 	glm::vec3 getPosition()
 	{
 		return position;
+	}
+
+	//debug
+	glm::vec3 getKnobPos()
+	{
+		return knobPosition;
 	}
 
 	glm::vec4 getColor()
@@ -54,7 +65,30 @@ public:
 	/* Takes a value between 0 and 1. */
 	void setSliderPosition(float position)
 	{
-		knobPosition.x = knobMinX + (position * (knobMaxX - knobMinX));
+		std::cout << "min x: " << knobMinX << std::endl;
+		std::cout << "max x: " << knobMaxX << std::endl;
+		std::cout << "position: " << position << std::endl;
+		if (position > knobMinX && position < knobMaxX)
+		{
+			knobPosition.x = position;
+			knobLeft = knobPosition.x;
+			knobRight = knobLeft + knobWidth;
+		}
+	}
+
+	bool containsPoint(float x, float y)
+	{
+		return x > knobLeft && x < knobRight && y < knobTop && y > knobBottom;
+	}
+
+	bool isPressed()
+	{
+		return pressed;
+	}
+
+	void setPressed(bool value)
+	{
+		pressed = value;
 	}
 
 	void initialize()
@@ -117,8 +151,10 @@ private:
 
 	glm::vec3 knobPosition;
 	glm::vec3 knobScale;
+	float knobTop, knobBottom, knobLeft, knobRight;
 	float knobHeight, knobWidth;
 	float knobMinX, knobMaxX;
+	bool pressed;
 	unsigned int VBO, VAO, EBO;
 
 };

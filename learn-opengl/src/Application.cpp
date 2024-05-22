@@ -31,6 +31,9 @@ bool firstMouse = true;
 float deltaTime = 0.0f;	// time between current frame and last frame
 float lastFrame = 0.0f;
 
+// UI components
+SliderKnob greynessSelector = SliderKnob(-1.0f, 1.0f, 0.1f);
+
 int main()
 {
     // glfw: initialize and configure
@@ -52,6 +55,7 @@ int main()
     }
     glfwMakeContextCurrent(window);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+    glfwSetCursorPosCallback(window, mouse_callback);
 
     // glad: load all OpenGL function pointers
     // ---------------------------------------
@@ -119,7 +123,6 @@ int main()
     ourShader.setMat4("view", view);
 
     // draw slider
-    SliderKnob greynessSelector = SliderKnob(-1.0f, 1.0f, 0.1f);
     greynessSelector.initialize();
 
     // render loop
@@ -185,7 +188,7 @@ int main()
             glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
         }
 
-        greynessSelector.setSliderPosition(0.5f + 0.5f * std::sin(glfwGetTime()));
+        //greynessSelector.setSliderPosition(0.5f + 0.5f * std::sin(glfwGetTime()));
         greynessSelector.render(ourShader);
         
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
@@ -211,8 +214,37 @@ int main()
 // ---------------------------------------------------------------------------------------------------------
 void processInput(GLFWwindow* window)
 {
+    double xpos, ypos;
+    glfwGetCursorPos(window, &xpos, &ypos);
+    float normalizedX = (2.0f * xpos) / screenWidth - 1.0f; // todo, coordinate normalization as a function
+    float normalizedY = 1.0f - (2.0f * ypos) / screenHeight;
+
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+    {
         glfwSetWindowShouldClose(window, true);
+    }
+    if (greynessSelector.isPressed())
+    {
+        if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_RELEASE)
+        {
+            greynessSelector.setPressed(false);
+        }
+        else if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
+        {
+            greynessSelector.setSliderPosition(normalizedX);
+        }
+    }
+    if (greynessSelector.containsPoint(normalizedX, normalizedY))
+    {
+        if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
+        {
+            //std::cout << "knob coords before: " << greynessSelector.getKnobPos().x << ", " << greynessSelector.getKnobPos().y << ", " << greynessSelector.getKnobPos().z << std::endl;
+            //greynessSelector.setSliderPosition(normalizedX);
+            greynessSelector.setPressed(true);
+            //std::cout << "knob coords after: " << greynessSelector.getKnobPos().x << ", " << greynessSelector.getKnobPos().y << ", " << greynessSelector.getKnobPos().z << std::endl;
+            //std::cout << "coords pressed: " << normalizedX << ", " << normalizedY << std::endl;
+        }
+    }
 
     //if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
     //    camera.ProcessKeyboard(FORWARD, deltaTime);
@@ -256,7 +288,7 @@ void mouse_callback(GLFWwindow* window, double xposIn, double yposIn)
     lastX = xpos;
     lastY = ypos;
 
-    camera.ProcessMouseMovement(xoffset, yoffset);
+    //camera.ProcessMouseMovement(xoffset, yoffset);
 }
 
 // glfw: whenever the mouse scroll wheel scrolls, this callback is called
