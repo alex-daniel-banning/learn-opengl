@@ -125,4 +125,9 @@ public:
         int test = glGetUniformLocation(ID, name.c_str());
         glUniform4f(glGetUniformLocation(ID, name.c_str()), x, y, z, w);
     }
+    void setVec4(const std::string& name, glm::vec4 value)
+    {
+        int test = glGetUniformLocation(ID, name.c_str());
+        glUniform4f(glGetUniformLocation(ID, name.c_str()), value.x, value.y, value.z, value.w);
+    }
 };

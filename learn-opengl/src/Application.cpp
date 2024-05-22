@@ -8,6 +8,7 @@
 
 #include <Shader.h>
 #include <Camera.h>
+#include <UI/SliderKnob.h>
 
 #include <iostream>
 
@@ -117,6 +118,10 @@ int main()
     glm::mat4 view = camera.GetViewMatrix();
     ourShader.setMat4("view", view);
 
+    // draw slider
+    SliderKnob greynessSelector = SliderKnob(-1.0f, 1.0f, 0.1f);
+    greynessSelector.initialize();
+
     // render loop
     // -----------
     while (!glfwWindowShouldClose(window))
@@ -135,14 +140,18 @@ int main()
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+		glBindBuffer(GL_ARRAY_BUFFER, VBO);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+        glBindVertexArray(VAO);
+
         // draw grey section
         ourShader.use();
         ourShader.setVec4("color", 0.5f, 0.5f, 0.5f, 1.0f);
 
-        glm::mat4 model = glm::mat4(1.0f);
-        model = glm::translate(model, glm::vec3(0.0f, -0.5f, 0.0f));
-        model = glm::scale(model, glm::vec3(1.0f, 0.5f, 1.0f));
-        ourShader.setMat4("model", model);
+        glm::mat4 greyBackground = glm::mat4(1.0f);
+        greyBackground = glm::translate(greyBackground, glm::vec3(0.0f, -0.5f, 0.0f));
+        greyBackground = glm::scale(greyBackground, glm::vec3(1.0f, 0.5f, 1.0f));
+        ourShader.setMat4("model", greyBackground);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
         // draw stripes
@@ -154,7 +163,6 @@ int main()
         // draw black stripes
         ourShader.setVec4("color", 0.0f, 0.0f, 0.0f, 1.0f);
         
-        int count = 0; // debug
         for (int i = 0; i < numStripes / 2; i++)
         {
             float distFromCenter = (stripeWidth / 2) + (stripeWidth * 2 * i) + stripeWidth;
@@ -163,12 +171,10 @@ int main()
             stripe = glm::scale(stripe, glm::vec3(1.0f, stripeWidth / normalizedScreenHeight, 1.0f));
             ourShader.setMat4("model", stripe);
             glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-            count++;
         }
 
         // draw white stripes
         ourShader.setVec4("color", 1.0f, 1.0f, 1.0f, 1.0f);
-        count = 0; // debug
         for (int i = 0; i < numStripes / 2; i++)
         {
             float distFromCenter = (stripeWidth / 2) + (stripeWidth * 2 * i);
@@ -177,11 +183,11 @@ int main()
             stripe = glm::scale(stripe, glm::vec3(1.0f, stripeWidth / normalizedScreenHeight, 1.0f));
             ourShader.setMat4("model", stripe);
             glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-            count++;
         }
-        
-        glBindVertexArray(VAO);
 
+        greynessSelector.setSliderPosition(0.5f + 0.5f * std::sin(glfwGetTime()));
+        greynessSelector.render(ourShader);
+        
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
         glfwSwapBuffers(window);
