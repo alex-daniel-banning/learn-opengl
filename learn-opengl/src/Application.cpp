@@ -34,6 +34,8 @@ float lastFrame = 0.0f;
 // UI components
 SliderKnob greynessSelector = SliderKnob(-1.0f, 1.0f, 0.1f);
 
+float greyness = 0.5f;
+
 int main()
 {
     // glfw: initialize and configure
@@ -149,7 +151,7 @@ int main()
 
         // draw grey section
         ourShader.use();
-        ourShader.setVec4("color", 0.5f, 0.5f, 0.5f, 1.0f);
+        ourShader.setVec4("color", greyness, greyness, greyness, 1.0f);
 
         glm::mat4 greyBackground = glm::mat4(1.0f);
         greyBackground = glm::translate(greyBackground, glm::vec3(0.0f, -0.5f, 0.0f));
@@ -232,17 +234,14 @@ void processInput(GLFWwindow* window)
         else if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
         {
             greynessSelector.setSliderPosition(normalizedX);
+            greyness = greynessSelector.getGreyness();
         }
     }
     if (greynessSelector.containsPoint(normalizedX, normalizedY))
     {
         if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
         {
-            //std::cout << "knob coords before: " << greynessSelector.getKnobPos().x << ", " << greynessSelector.getKnobPos().y << ", " << greynessSelector.getKnobPos().z << std::endl;
-            //greynessSelector.setSliderPosition(normalizedX);
             greynessSelector.setPressed(true);
-            //std::cout << "knob coords after: " << greynessSelector.getKnobPos().x << ", " << greynessSelector.getKnobPos().y << ", " << greynessSelector.getKnobPos().z << std::endl;
-            //std::cout << "coords pressed: " << normalizedX << ", " << normalizedY << std::endl;
         }
     }
 

@@ -39,17 +39,12 @@ public:
 		knobLeft = knobPosition.x;
 		knobRight = knobLeft + knobWidth;
 		pressed = false;
+		calculateGreyness();
 	}
 
 	glm::vec3 getPosition()
 	{
 		return position;
-	}
-
-	//debug
-	glm::vec3 getKnobPos()
-	{
-		return knobPosition;
 	}
 
 	glm::vec4 getColor()
@@ -65,14 +60,13 @@ public:
 	/* Takes a value between 0 and 1. */
 	void setSliderPosition(float position)
 	{
-		std::cout << "min x: " << knobMinX << std::endl;
-		std::cout << "max x: " << knobMaxX << std::endl;
-		std::cout << "position: " << position << std::endl;
-		if (position > knobMinX && position < knobMaxX)
+		float centeredPos = position - (knobWidth / 2);
+		if (centeredPos > knobMinX && centeredPos < knobMaxX)
 		{
-			knobPosition.x = position;
+			knobPosition.x = centeredPos;
 			knobLeft = knobPosition.x;
 			knobRight = knobLeft + knobWidth;
+			calculateGreyness();
 		}
 	}
 
@@ -89,6 +83,11 @@ public:
 	void setPressed(bool value)
 	{
 		pressed = value;
+	}
+
+	float getGreyness()
+	{
+		return greynessLevel;
 	}
 
 	void initialize()
@@ -110,32 +109,18 @@ public:
 		glBindBuffer(GL_ARRAY_BUFFER, VBO);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 		glBindVertexArray(VAO);
+
         // draw slider
         shader.setVec4("color", color);
         glm::mat4 modelTransform = glm::mat4(1.0f);
-        //modelTransform = glm::translate(modelTransform, position);
-        //modelTransform = glm::scale(modelTransform, scale);
-        //shader.setMat4("model", modelTransform);
-		//shader.use();
-        //glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-
-		//modelTransform = glm::mat4(1.0f);
-		//modelTransform = glm::translate(modelTransform, glm::vec3(-0.6f, 0.9f, 0.1f));
-		//modelTransform = glm::scale(modelTransform, glm::vec3(0.3f, 0.005f, 1.0f));
-        //shader.setMat4("model", modelTransform);
-		//shader.use();
-        //glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-
-		modelTransform = glm::mat4(1.0f);
 		modelTransform = glm::translate(modelTransform, position);
 		modelTransform = glm::scale(modelTransform, DEFAULT_SCALE);
         shader.setMat4("model", modelTransform);
 		shader.use();
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
-		// default/initial knob position
 		// 1. center vertically
-        shader.setVec4("color", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+        shader.setVec4("color", glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
 		modelTransform = glm::mat4(1.0f);
 		modelTransform = glm::translate(modelTransform, knobPosition);
 		modelTransform = glm::scale(modelTransform, DEFAULT_SCALE * knobScale);
@@ -157,4 +142,10 @@ private:
 	bool pressed;
 	unsigned int VBO, VAO, EBO;
 
+	float greynessLevel;
+
+	void calculateGreyness()
+	{
+		greynessLevel = (knobPosition.x - knobMinX) / (knobMaxX - knobMinX);
+	}
 };
