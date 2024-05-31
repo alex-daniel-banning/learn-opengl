@@ -3,16 +3,7 @@
 #include <glm/glm.hpp>
 #include <glad/glad.h>
 
-const glm::vec4 DEFAULT_COLOR = glm::vec4(0.5f, 0.0f, 0.12f, 1.0f);
-const glm::vec3 DEFAULT_SCALE = glm::vec3(0.6f, 0.15f, 1.0f);
-const glm::vec3 DEFAULT_KNOB_SCALE = glm::vec3(0.075f, 0.75f, 1.0f);
-const float VERTICES[] = {
-     1.0f,  0.0f, 0.0f,  // top right
-     1.0f, -1.0f, 0.0f,  // bottom right
-     0.0f, -1.0f, 0.0f,  // bottom left
-     0.0f,  0.0f, 0.0f   // top left
-};
-unsigned int INDICES[] = {
+const unsigned int INDICES[] = {
    0, 1, 2,
    2, 3, 0
 };
@@ -40,54 +31,6 @@ public:
 		knobRight = knobLeft + knobWidth;
 		pressed = false;
 		calculateGreyness();
-	}
-
-	glm::vec3 getPosition()
-	{
-		return position;
-	}
-
-	glm::vec4 getColor()
-	{
-		return color;
-	}
-
-	glm::vec3 getScale()
-	{
-		return scale;
-	}
-
-	/* Takes a value between 0 and 1. */
-	void setSliderPosition(float position)
-	{
-		float centeredPos = position - (knobWidth / 2);
-		if (centeredPos > knobMinX && centeredPos < knobMaxX)
-		{
-			knobPosition.x = centeredPos;
-			knobLeft = knobPosition.x;
-			knobRight = knobLeft + knobWidth;
-			calculateGreyness();
-		}
-	}
-
-	bool containsPoint(float x, float y)
-	{
-		return x > knobLeft && x < knobRight && y < knobTop && y > knobBottom;
-	}
-
-	bool isPressed()
-	{
-		return pressed;
-	}
-
-	void setPressed(bool value)
-	{
-		pressed = value;
-	}
-
-	float getGreyness()
-	{
-		return greynessLevel;
 	}
 
 	void initialize()
@@ -129,7 +72,71 @@ public:
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 	}
 
+	glm::vec3 getPosition()
+	{
+		return position;
+	}
+
+	glm::vec4 getColor()
+	{
+		return color;
+	}
+
+	glm::vec3 getScale()
+	{
+		return scale;
+	}
+
+	float getHeight()
+	{
+		return scale.y;
+	}
+
+	/* Takes a value between 0 and 1. */
+	void setSliderPosition(float position)
+	{
+		float centeredPos = position - (knobWidth / 2);
+		if (centeredPos > knobMinX && centeredPos < knobMaxX)
+		{
+			knobPosition.x = centeredPos;
+			knobLeft = knobPosition.x;
+			knobRight = knobLeft + knobWidth;
+			calculateGreyness();
+		}
+	}
+
+	bool containsPoint(float x, float y)
+	{
+		return x > knobLeft && x < knobRight && y < knobTop && y > knobBottom;
+	}
+
+	bool isPressed()
+	{
+		return pressed;
+	}
+
+	void setPressed(bool value)
+	{
+		pressed = value;
+	}
+
+	float getGreyness()
+	{
+		return greynessLevel;
+	}
+
+
 private:
+	static inline const glm::vec4 DEFAULT_COLOR = glm::vec4(0.5f, 0.0f, 0.12f, 1.0f);
+	static inline const glm::vec3 DEFAULT_SCALE = glm::vec3(0.6f, 0.15f, 1.0f);
+	static inline const glm::vec3 DEFAULT_KNOB_SCALE = glm::vec3(0.075f, 0.75f, 1.0f);
+	static inline const float VERTICES[] = {
+	     1.0f,  0.0f, 0.0f,  // top right
+	     1.0f, -1.0f, 0.0f,  // bottom right
+	     0.0f, -1.0f, 0.0f,  // bottom left
+	     0.0f,  0.0f, 0.0f   // top left
+	};
+
 	glm::vec3 position;
 	glm::vec4 color;
 	glm::vec3 scale;

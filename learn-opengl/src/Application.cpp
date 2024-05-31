@@ -9,13 +9,17 @@
 #include <Shader.h>
 #include <Camera.h>
 #include <UI/SliderKnob.h>
+#include <UI/StripOrientBtn.h>
 
 #include <iostream>
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
+void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void processInput(GLFWwindow* window);
+void handleGreynessSelectorInput(GLFWwindow* window, float xpos, float ypos);
+void handleStripeOrientationButtonInput(GLFWwindow* window, float xpos, float ypos);
 
 // settings
 unsigned int screenWidth = 800;
@@ -33,8 +37,8 @@ float lastFrame = 0.0f;
 
 // UI components
 SliderKnob greynessSelector = SliderKnob(-1.0f, 1.0f, 0.1f);
-
 float greyness = 0.5f;
+StripeOrientBtn stripeOrientationButton = StripeOrientBtn(glm::vec3(greynessSelector.getPosition().x, greynessSelector.getPosition().y - greynessSelector.getHeight(), 0.1f));
 
 int main()
 {
@@ -58,6 +62,7 @@ int main()
     glfwMakeContextCurrent(window);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
     glfwSetCursorPosCallback(window, mouse_callback);
+    glfwSetMouseButtonCallback(window, mouse_button_callback);
 
     // glad: load all OpenGL function pointers
     // ---------------------------------------
@@ -124,8 +129,9 @@ int main()
     glm::mat4 view = camera.GetViewMatrix();
     ourShader.setMat4("view", view);
 
-    // draw slider
+    // initialize UI components
     greynessSelector.initialize();
+    stripeOrientationButton.initialize();
 
     // render loop
     // -----------
@@ -152,7 +158,6 @@ int main()
         // draw grey section
         ourShader.use();
         ourShader.setVec4("color", greyness, greyness, greyness, 1.0f);
-
         glm::mat4 greyBackground = glm::mat4(1.0f);
         greyBackground = glm::translate(greyBackground, glm::vec3(0.0f, -0.5f, 0.0f));
         greyBackground = glm::scale(greyBackground, glm::vec3(1.0f, 0.5f, 1.0f));
@@ -167,7 +172,6 @@ int main()
         
         // draw black stripes
         ourShader.setVec4("color", 0.0f, 0.0f, 0.0f, 1.0f);
-        
         for (int i = 0; i < numStripes / 2; i++)
         {
             float distFromCenter = (stripeWidth / 2) + (stripeWidth * 2 * i) + stripeWidth;
@@ -190,8 +194,10 @@ int main()
             glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
         }
 
-        //greynessSelector.setSliderPosition(0.5f + 0.5f * std::sin(glfwGetTime()));
         greynessSelector.render(ourShader);
+
+        // draw stripe orientation button
+        stripeOrientationButton.render(ourShader);
         
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
@@ -225,25 +231,9 @@ void processInput(GLFWwindow* window)
     {
         glfwSetWindowShouldClose(window, true);
     }
-    if (greynessSelector.isPressed())
-    {
-        if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_RELEASE)
-        {
-            greynessSelector.setPressed(false);
-        }
-        else if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
-        {
-            greynessSelector.setSliderPosition(normalizedX);
-            greyness = greynessSelector.getGreyness();
-        }
-    }
-    if (greynessSelector.containsPoint(normalizedX, normalizedY))
-    {
-        if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
-        {
-            greynessSelector.setPressed(true);
-        }
-    }
+
+    handleGreynessSelectorInput(window, normalizedX, normalizedY);
+    handleStripeOrientationButtonInput(window, normalizedX, normalizedY);
 
     //if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
     //    camera.ProcessKeyboard(FORWARD, deltaTime);
@@ -253,6 +243,36 @@ void processInput(GLFWwindow* window)
     //    camera.ProcessKeyboard(LEFT, deltaTime);
     //if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
     //    camera.ProcessKeyboard(RIGHT, deltaTime);
+}
+
+void handleStripeOrientationButtonInput(GLFWwindow* window, float xpos, float ypos)
+{
+    // when the button is both pressed down and released without the cursor ever leaving the boundary, do the action
+    /* 
+    */
+}
+
+void handleGreynessSelectorInput(GLFWwindow* window, float xpos, float ypos)
+{
+    if (greynessSelector.isPressed())
+    {
+        if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_RELEASE)
+        {
+            greynessSelector.setPressed(false);
+        }
+        else if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
+        {
+            greynessSelector.setSliderPosition(xpos);
+            greyness = greynessSelector.getGreyness();
+        }
+    }
+    //if (greynessSelector.containsPoint(xpos, ypos))
+    //{
+    //    if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
+    //    {
+    //        greynessSelector.setPressed(true);
+    //    }
+    //}
 }
 
 // glfw: whenever the window size changed (by OS or user resize) this callback function executes
@@ -288,6 +308,26 @@ void mouse_callback(GLFWwindow* window, double xposIn, double yposIn)
     lastY = ypos;
 
     //camera.ProcessMouseMovement(xoffset, yoffset);
+}
+
+void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
+{
+    double xpos, ypos;
+    glfwGetCursorPos(window, &xpos, &ypos);
+    float normalizedX = (2.0f * xpos) / screenWidth - 1.0f; // todo, coordinate normalization as a function
+    float normalizedY = 1.0f - (2.0f * ypos) / screenHeight;
+
+    // handle greynessress
+    if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
+    {
+        if (greynessSelector.containsPoint(normalizedX, normalizedY))
+        {
+            greynessSelector.setPressed(true);
+        }
+    }
+
+    // todo handle stripe orientation button press
+    // continue here...
 }
 
 // glfw: whenever the mouse scroll wheel scrolls, this callback is called
