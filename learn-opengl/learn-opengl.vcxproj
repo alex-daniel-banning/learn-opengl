@@ -19,11 +19,13 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\2D_Shapes\Cross.cpp" />
     <ClCompile Include="src\glad.c" />
     <ClCompile Include="src\Application.cpp" />
     <ClCompile Include="src\stb_image.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\2D_Shapes\Cross.h" />
     <ClInclude Include="include\Camera.h" />
     <ClInclude Include="include\Shader.h" />
   </ItemGroup>
