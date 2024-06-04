@@ -11,9 +11,11 @@
 #include <2D_Shapes/Cross.h>
 
 #include <iostream>
+#include <cmath>
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow* window);
+void renderCrosses(Shader& shader, float angle, glm::vec3& pivotPoint);
 
 // settings
 const unsigned int SCR_WIDTH = 800;
@@ -28,6 +30,9 @@ bool firstMouse = true;
 // timing
 float deltaTime = 0.0f;	// time between current frame and last frame
 float lastFrame = 0.0f;
+
+float SCALE = 0.15f;
+Cross cross = Cross(SCALE);
 
 int main()
 {
@@ -84,7 +89,6 @@ int main()
     glm::mat4 view = camera.GetViewMatrix();
     ourShader.setMat4("view", view);
 
-    Cross cross = Cross(1.0f);
     cross.initialize();
 
     // render loop
@@ -111,14 +115,10 @@ int main()
         ourShader.use();
         ourShader.setVec4("color", 0.5f, 0.5f, 0.0f, 0.5f);
         glm::vec3 pivotPoint = glm::vec3(0.0f, 0.0f, 0.0f);
-        float angle = (glm::pi<float>() / 5.0f) * glfwGetTime(); // configured for 1 revolution per 10 secs
-        glm::mat4 model = glm::mat4(1.0f);
-        model = glm::translate(model, -pivotPoint);
-        model = glm::rotate(model, angle, glm::vec3(0.0f, 0.0f, 1.0f));
-        model = glm::translate(model, pivotPoint);
-        ourShader.setMat4("model", model);
+        float angle = -(glm::pi<float>() / 5.0f) * glfwGetTime(); // configured for 1 revolution per 10 secs
 
-        cross.render(ourShader);
+        // render all crosses
+        renderCrosses(ourShader, angle, pivotPoint);
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
@@ -158,3 +158,19 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
     glViewport(0, 0, width, height);
 }
 
+void renderCrosses(Shader& shader, float angle, glm::vec3& pivotPoint)
+{
+    float minimumYPos, minimumXPos;
+    minimumYPos = minimumXPos = -std::sqrt(2);
+    float maximumYPos, maximumXPos;
+    maximumYPos = maximumXPos = std::sqrt(2);
+
+    for (float yPos = minimumYPos; yPos <= maximumYPos; yPos += cross.getWidth() + (SCALE / 2))
+    {
+        for (float xPos = minimumXPos; xPos <= maximumXPos; xPos += cross.getWidth() + (SCALE / 2))
+        {
+            glm::vec3 position = glm::vec3(xPos, yPos, 0.0f);
+            cross.render(shader, position, angle, pivotPoint);
+        }
+    }
+}

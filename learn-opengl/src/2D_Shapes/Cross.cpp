@@ -1,4 +1,5 @@
 #include "2D_Shapes/Cross.h"
+#include <GLFW/glfw3.h>
 
 const float Cross::VERTICES[12] = {
 	-0.5f,  0.0f, 0.0f,
@@ -35,12 +36,23 @@ void Cross::initialize()
 	glBindVertexArray(0);
 };
 
-void Cross::render(Shader& shader)
+void Cross::render(Shader& shader, glm::vec3 &position, float angleOfRotation, glm::vec3 &pivotPoint)
 {
+    glm::mat4 transform = glm::mat4(1.0f);
+	transform = glm::rotate(transform, angleOfRotation, glm::vec3(0.0f, 0.0f, 1.0f));
+	transform = glm::translate(transform, position);
+	transform = glm::scale(transform, glm::vec3(scale, scale, scale));
+
+    shader.setMat4("model", transform);
 	shader.use();
 
 	glBindVertexArray(VAO);
-	glLineWidth(5.0f * scale);
+	glLineWidth(10.0f * scale);
 	glDrawArrays(GL_LINES, 0, 4);
 	glBindVertexArray(0);
+}
+
+float Cross::getWidth()
+{
+	return scale;
 }
