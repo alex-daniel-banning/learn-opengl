@@ -160,16 +160,48 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 
 void renderCrosses(Shader& shader, float angle, glm::vec3& pivotPoint)
 {
-    float minimumYPos, minimumXPos;
-    minimumYPos = minimumXPos = -std::sqrt(2);
-    float maximumYPos, maximumXPos;
-    maximumYPos = maximumXPos = std::sqrt(2);
+    float padding = SCALE / 2;
+    float xMax, yMax;
+    xMax = yMax = std::sqrt(2);
+    float xMin, yMin;
+    xMin = yMin = -std::sqrt(2);
 
-    for (float yPos = minimumYPos; yPos <= maximumYPos; yPos += cross.getWidth() + (SCALE / 2))
+    // center
+    glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f);
+    cross.render(shader, position, angle, pivotPoint);
+    // top right quadrent
+    for (float y = 0; y <= yMax; y += cross.getWidth() + padding)
     {
-        for (float xPos = minimumXPos; xPos <= maximumXPos; xPos += cross.getWidth() + (SCALE / 2))
+        for (float x = 0; x <= xMax; x += cross.getWidth() + padding)
         {
-            glm::vec3 position = glm::vec3(xPos, yPos, 0.0f);
+            glm::vec3 position = glm::vec3(x, y, 0.0f);
+            cross.render(shader, position, angle, pivotPoint);
+        }
+    }
+    // bottom right quadrent
+    for (float y = -(cross.getWidth() + padding); y >= yMin; y -= cross.getWidth() + padding)
+    {
+        for (float x = 0; x <= xMax; x += cross.getWidth() + padding)
+        {
+            glm::vec3 position = glm::vec3(x, y, 0.0f);
+            cross.render(shader, position, angle, pivotPoint);
+        }
+    }
+    // bottom left quadrent
+    for (float y = -(cross.getWidth() + padding); y >= yMin; y -= cross.getWidth() + padding)
+    {
+        for (float x = -(cross.getWidth() + padding); x >= xMin; x -= cross.getWidth() + padding)
+        {
+            glm::vec3 position = glm::vec3(x, y, 0.0f);
+            cross.render(shader, position, angle, pivotPoint);
+        }
+    }
+    // top left quadrent
+    for (float y = 0; y <= yMax; y += cross.getWidth() + padding)
+    {
+        for (float x = -(cross.getWidth() + padding); x >= xMin; x -= cross.getWidth() + padding)
+        {
+            glm::vec3 position = glm::vec3(x, y, 0.0f);
             cross.render(shader, position, angle, pivotPoint);
         }
     }
