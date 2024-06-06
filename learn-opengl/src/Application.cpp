@@ -9,6 +9,7 @@
 #include <Shader.h>
 #include <Camera.h>
 #include <2D_Shapes/Cross.h>
+#include <2D_Shapes/Circle.h>
 
 #include <iostream>
 #include <cmath>
@@ -33,6 +34,7 @@ float lastFrame = 0.0f;
 
 float SCALE = 0.15f;
 Cross cross = Cross(SCALE);
+Circle circle = Circle(0.25f);
 
 int main()
 {
@@ -90,6 +92,7 @@ int main()
     ourShader.setMat4("view", view);
 
     cross.initialize();
+    circle.initialize();
 
     // render loop
     // -----------
@@ -118,7 +121,10 @@ int main()
         float angle = -(glm::pi<float>() / 5.0f) * glfwGetTime(); // configured for 1 revolution per 10 secs
 
         // render all crosses
-        renderCrosses(ourShader, angle, pivotPoint);
+        //renderCrosses(ourShader, angle, pivotPoint);
+
+        // render circle
+        circle.render(ourShader); // continue here, not rendering
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------

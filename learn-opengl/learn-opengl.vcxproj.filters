@@ -27,6 +27,9 @@
     <ClCompile Include="src\2D_Shapes\Cross.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\2D_Shapes\Circle.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\Shader.h">
@@ -36,6 +39,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\2D_Shapes\Cross.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\2D_Shapes\Circle.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

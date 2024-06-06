@@ -10,6 +10,8 @@ const float Cross::VERTICES[12] = {
 
 Cross::Cross(const float scale)
 {
+	VAO = 0;
+	VBO = 0;
 	this->scale = scale;
 };
 
