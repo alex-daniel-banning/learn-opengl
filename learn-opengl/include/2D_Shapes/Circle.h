@@ -14,6 +14,7 @@ public:
 	void initialize();
 
 	void render(Shader& shader);
+	void render(Shader& shader, glm::vec3& position, float angleOfRotation, glm::vec3& pivotPoint);
 
 private:
 	unsigned int VBO, VAO;

@@ -13,10 +13,13 @@
 
 #include <iostream>
 #include <cmath>
+#define _USE_MATH_DEFINES
+#include <math.h>
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow* window);
 void renderCrosses(Shader& shader, float angle, glm::vec3& pivotPoint);
+void renderRevolvingCircles(Shader& shader, float angle, glm::vec3& pivotPoint);
 
 // settings
 const unsigned int SCR_WIDTH = 800;
@@ -34,7 +37,10 @@ float lastFrame = 0.0f;
 
 float SCALE = 0.15f;
 Cross cross = Cross(SCALE);
-Circle circle = Circle(0.25f);
+Circle centerCircle = Circle(0.025f);
+Circle centerCircleBorder = Circle(0.033f);
+Circle revolvingCircle = Circle(0.04f);
+Circle revolvingCircleBorder = Circle(0.048f);
 
 int main()
 {
@@ -92,7 +98,10 @@ int main()
     ourShader.setMat4("view", view);
 
     cross.initialize();
-    circle.initialize();
+    centerCircle.initialize();
+    centerCircleBorder.initialize();
+    revolvingCircle.initialize();
+    revolvingCircleBorder.initialize();
 
     // render loop
     // -----------
@@ -110,21 +119,27 @@ int main()
 
         // render
         // ------
-        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+        glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 
         // activate shader
         ourShader.use();
-        ourShader.setVec4("color", 0.5f, 0.5f, 0.0f, 0.5f);
+        ourShader.setVec4("color", 0.75f, 0.75f, 0.75f, 1.0f);
         glm::vec3 pivotPoint = glm::vec3(0.0f, 0.0f, 0.0f);
         float angle = -(glm::pi<float>() / 5.0f) * glfwGetTime(); // configured for 1 revolution per 10 secs
 
         // render all crosses
-        //renderCrosses(ourShader, angle, pivotPoint);
+        renderCrosses(ourShader, angle, pivotPoint);
 
-        // render circle
-        circle.render(ourShader); // continue here, not rendering
+        // render center circle
+        ourShader.setVec4("color", 0.0f, 0.0f, 0.0f, 1.0f);
+        centerCircleBorder.render(ourShader);
+        ourShader.setVec4("color", 1.0f, 0.0f, 0.0f, 1.0f);
+        centerCircle.render(ourShader);
+
+        // render revolving circles
+        renderRevolvingCircles(ourShader, angle, pivotPoint);
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
@@ -166,7 +181,7 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 
 void renderCrosses(Shader& shader, float angle, glm::vec3& pivotPoint)
 {
-    float padding = SCALE / 2;
+    float padding = SCALE / 3;
     float xMax, yMax;
     xMax = yMax = std::sqrt(2);
     float xMin, yMin;
@@ -210,5 +225,22 @@ void renderCrosses(Shader& shader, float angle, glm::vec3& pivotPoint)
             glm::vec3 position = glm::vec3(x, y, 0.0f);
             cross.render(shader, position, angle, pivotPoint);
         }
+    }
+}
+
+void renderRevolvingCircles(Shader& shader, float angle, glm::vec3& pivotPoint)
+{
+    int numberOfCircles = 3;
+    float distanceFromCenter = 0.5f;
+    for (int i = 0; i < numberOfCircles; i++)
+    {
+        float theta = i * (2 * M_PI / numberOfCircles);
+        glm::vec3 position = glm::vec3(distanceFromCenter * cos(theta), distanceFromCenter * sin(theta), 0.0f);
+
+        shader.setVec4("color", 0.0f, 0.0f, 0.0f, 1.0f);
+        revolvingCircleBorder.render(shader, position, angle, pivotPoint);
+
+        shader.setVec4("color", 0.07f, 0.55f, 0.88f, 1.0f);
+        revolvingCircle.render(shader, position, angle, pivotPoint);
     }
 }

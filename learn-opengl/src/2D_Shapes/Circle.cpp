@@ -19,7 +19,8 @@ Circle::~Circle()
 
 void Circle::initialize()
 { 
-	int NUM_SEGMENTS = 100;
+	int NUM_SEGMENTS = 1000 * radius;
+	vertices.push_back(0.0f);
 	vertices.push_back(0.0f);
 	vertices.push_back(0.0f);
 	for (int i = 0; i <= NUM_SEGMENTS; i++)
@@ -29,6 +30,7 @@ void Circle::initialize()
 		float y = radius * sin(angle);
 		vertices.push_back(x);
 		vertices.push_back(y);
+		vertices.push_back(1.0f);
 	}
 
 	glGenVertexArrays(1, &VAO);
@@ -39,7 +41,7 @@ void Circle::initialize()
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), vertices.data(), GL_STATIC_DRAW);
 
-	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
 }
 
@@ -49,6 +51,20 @@ void Circle::render(Shader& shader)
     shader.setMat4("model", transform);
 
 	shader.use();
+	glBindVertexArray(VAO);
+	glDrawArrays(GL_TRIANGLE_FAN, 0, vertices.size() / 2);
+	glBindVertexArray(0);
+}
+
+void Circle::render(Shader& shader, glm::vec3 &position, float angleOfRotation, glm::vec3 &pivotPoint)
+{
+    glm::mat4 transform = glm::mat4(1.0f);
+	transform = glm::rotate(transform, angleOfRotation, glm::vec3(0.0f, 0.0f, 1.0f));
+	transform = glm::translate(transform, position);
+
+    shader.setMat4("model", transform);
+	shader.use();
+
 	glBindVertexArray(VAO);
 	glDrawArrays(GL_TRIANGLE_FAN, 0, vertices.size() / 2);
 	glBindVertexArray(0);

@@ -49,7 +49,7 @@ void Cross::render(Shader& shader, glm::vec3 &position, float angleOfRotation, g
 	shader.use();
 
 	glBindVertexArray(VAO);
-	glLineWidth(10.0f * scale);
+	glLineWidth(20.0f * scale);
 	glDrawArrays(GL_LINES, 0, 4);
 	glBindVertexArray(0);
 }
